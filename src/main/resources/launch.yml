@@ -1,0 +1,57 @@
+###################################################################
+# JDevs                     v1.0.0                      Christmas #
+# Christmas                                                 JDevs #
+###################################################################
+
+# Install the plugin: DecentHolograms
+# Language: RU/EN
+language: null
+
+# The optimal settings have been set to optimize the plugin's experience with your project.
+BaseSettings:
+  debug: true # Report errors in more detail
+  autoGive: false # Loot immediately drops out of the gift, so that in case of a crash, the player can pick up resources.
+  onCrashes:
+    enabled: false # If your server crashes frequently, then enable this feature
+  supports:
+    DecentHolograms: true # DecentHolograms support (Holograms gift support)
+    WorldGuard: true # WorldGuard & WorldEdit support
+    PlaceholderAPI: true # PlaceholderAPI support
+    # The following placeholders are available:
+    # %ChristmasGifts_active% - Check if the player has a gift now or not
+    # %ChristmasGifts_active_Player% - Check if the player has a gift now or not
+    # %ChristmasGifts_limit% - Check if the player has a limit on gifts
+    # %ChristmasGifts_limit_Player% - Check if the player has a limit on gifts
+    # Output:
+    # true - The player has reached the limit/The gift is active
+    # false - The player has not reached the limit/The gift is not active
+  spawn:
+    mode: # Mode
+      enabled: 1 # Restart required
+      # Use mode 2 for a better experience with plug-in performance
+      # On command - 0
+      # Chance when the player moves - 1
+      # Every some time (minutes, hours) - 2
+      1:
+        FullChance: 1000000 # A full chance for a gift
+        Chance: 10 # A chance gift
+        Every: 60 # Checks the chances when the player moves every defined time.
+        # Measured in ticks, 20 ticks is 1 second.
+        # Set the ticks value higher if the plugin starts causing lags.
+      2:
+        people: null # How many people will try their luck for Mode 2 (null - disabled for 1 mode, -1 - all players)
+        every: 3600 # In seconds
+    wg_support: 2 # WorldGuard support
+    # Ignore the region - 0
+    # On command - 1
+    # Member/Owner region and __global__ - 2
+    # Only __global__ - 3
+    type-worlds: blocked # allowed/blocked
+    worlds: # List of worlds for the type
+      - "no"
+    type-biomes: blocked # allowed/blocked
+    biomes: # List of biomes for the type
+      - "no"
+    blocked: # Blocking the spawn of a gift for the player when:
+      fly: true # When he flies
+      shift: true # When he's on the shift

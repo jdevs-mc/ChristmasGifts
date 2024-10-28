@@ -1,0 +1,37 @@
+# Storing these items for Santa and the Grinch
+loot:
+  santa:
+    2_Loot:
+      item:
+        ==: org.bukkit.inventory.ItemStack
+        type: EMERALD
+      chance: 100
+      amount: 1-16
+    8_Loot:
+      item:
+        ==: org.bukkit.inventory.ItemStack
+        type: DIAMOND_SWORD
+      chance: 25
+      amount: 1-1
+########################################################################################
+########################################################################################
+########################################################################################
+  grinch:
+    42_Loot:
+      item:
+        ==: org.bukkit.inventory.ItemStack
+        type: BONE
+      chance: 100
+      amount: 1-8
+    2_Loot:
+      item:
+        ==: org.bukkit.inventory.ItemStack
+        type: COAL
+      chance: 100
+      amount: 2-12
+    44_Loot:
+      item:
+        ==: org.bukkit.inventory.ItemStack
+        type: COAL_BLOCK
+      chance: 20
+      amount: 1-12
