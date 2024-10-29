@@ -20,8 +20,8 @@ Wandering around the world, the player can get a gift from Santa, but did the Gr
 ### 🔎 Checks:
 - The plugin will automatically detect your server version so that it starts working correctly with your project.
 - The plugin will check the working conditions and, if necessary, will warn about errors and turn off.
-- The gift was protected from destruction attempts.
 - Replacement of some parts of the configuration in case of their absence.
+- The gift was protected from destruction attempts.
 
 ![2024_10_29_16_23_061-ezgif com-optimize](https://github.com/user-attachments/assets/143b3c1d-d69b-4a13-bd5e-10acf4750c32)
 
