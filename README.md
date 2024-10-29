@@ -1,5 +1,5 @@
 # 🎁 **ChristmasGifts**
-## 🛷 Deliver gifts to your server that will bring pleasant surprises to your players 🎁
+## 🛷 Deliver gifts to your server that will bring pleasant surprises to your players 
 This plugin adds a gift delivery mechanic for your players.
 # 🚶 Wander the world
 Wandering around the world, the player can get a gift from Santa, but did the Grinch put his rags in it?
