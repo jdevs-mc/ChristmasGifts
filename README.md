@@ -15,7 +15,7 @@ Wandering around the world, the player can get a gift from Santa, but did the Gr
 ### 🌐 Plugins:
 - **WorldGuard, WorldEdit** - Check where your gifts will spawn.
 - **PlaceholderAPI** - Add the ability to interact with the plugin via placeholders, and also add placeholders to messages from the configuration.
-- **DecentHolograms** - Put a hologram over the gift. 
+- **DecentHolograms/HolographicDisplays** - Put a hologram over the gift. 
 
 ![image](https://github.com/user-attachments/assets/50eaaa9b-1cfe-4609-b305-85d4453c44eb)
 
@@ -54,6 +54,8 @@ Get a list of commands using /gifts help
 - Add loot via the /gifts command
 ### 🔐Storage:
 - Storing limit data and gifts in case of crashes using a file.
+### 🔄ConfigUpdate
+
 ## 📝 Configurations:
 View them by navigating through the files using the following path: src\main\resources
 
