@@ -17,8 +17,7 @@ public class Settings {
     public static boolean WorldGuard = launch != null && launch.getBoolean("BaseSettings.supports.WorldGuard");
     public static int max = config.getInt("settings.gift.max");
     public static boolean limit = config.getBoolean("settings.gift.limit");
-    public static boolean DSupport = launch.getBoolean("BaseSettings.supports.DecentHolograms");
-    public static boolean DHolograms = Configurations.config.getBoolean("settings.holograms.enabled");
+    public static String HologramType;
     public static boolean takedLoot = config.getBoolean("settings.loot.taked");
     public static String generateText(int length) {
         String symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";

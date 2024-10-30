@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 
+import static dev.jdevs.JGifts.Christmas.version_mode;
 import static dev.jdevs.JGifts.events.FallGifts.gifts;
 
 public class AntiGrief implements Listener {
@@ -28,8 +29,15 @@ public class AntiGrief implements Listener {
         if (gifts.isEmpty()) {
             return;
         }
-        for (Block ok : event.getBlocks()) {
-            if (gifts.containsKey(ok.getLocation())) {
+        if (version_mode >= 8) {
+            for (Block ok : event.getBlocks()) {
+                if (gifts.containsKey(ok.getLocation())) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+        else {
+            if (gifts.containsKey(event.getRetractLocation())) {
                 event.setCancelled(true);
             }
         }
@@ -48,13 +56,6 @@ public class AntiGrief implements Listener {
 
     @EventHandler
     void Explode(EntityExplodeEvent event) {
-        if (gifts.isEmpty()) {
-            return;
-        }
-        event.blockList().removeIf(b -> gifts.containsKey(b.getLocation()));
-    }
-    @EventHandler
-    void Explode(BlockExplodeEvent event) {
         if (gifts.isEmpty()) {
             return;
         }

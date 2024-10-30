@@ -1,22 +1,36 @@
 ###################################################################
-# JDevs                     v1.0.0                      Christmas #
+# JDevs                     v1.1.0                      Christmas #
 # Christmas                                                 JDevs #
 ###################################################################
 
-# Install the plugin: DecentHolograms
+# Do not delete
+version: 1.1.0
+
 # Language: RU/EN
-language: null
+language: "null"
 
 # The optimal settings have been set to optimize the plugin's experience with your project.
 BaseSettings:
-  debug: true # Report errors in more detail
-  autoGive: false # Loot immediately drops out of the gift, so that in case of a crash, the player can pick up resources.
+  # Report errors in more detail
+  debug: true
+
+  # Loot immediately drops out of the gift, so that in case of a crash, the player can pick up resources.
+  autoGive: false
+
   onCrashes:
-    enabled: false # If your server crashes frequently, then enable this feature
+    # If your server crashes frequently, then enable this feature
+    enabled: false
   supports:
-    DecentHolograms: true # DecentHolograms support (Holograms gift support)
-    WorldGuard: true # WorldGuard & WorldEdit support
-    PlaceholderAPI: true # PlaceholderAPI support
+    # Select the plugin used for the hologram above the gift.
+    HologramType: HolographicDisplays
+    # Put "null" if you do not want to use holograms.
+    # Put "HolographicDisplays" if you use this plugin on holograms
+    # Put "DecentHolograms" if you use this plugin on holograms
+
+    # WorldGuard & WorldEdit support
+    WorldGuard: true
+
+    # PlaceholderAPI support
     # The following placeholders are available:
     # %ChristmasGifts_active% - Check if the player has a gift now or not
     # %ChristmasGifts_active_Player% - Check if the player has a gift now or not
@@ -25,33 +39,55 @@ BaseSettings:
     # Output:
     # true - The player has reached the limit/The gift is active
     # false - The player has not reached the limit/The gift is not active
+    PlaceholderAPI: true
   spawn:
-    mode: # Mode
-      enabled: 1 # Restart required
+    # Mode
+    mode:
+      # Restart required
+      enabled: 1
       # Use mode 2 for a better experience with plug-in performance
       # On command - 0
       # Chance when the player moves - 1
       # Every some time (minutes, hours) - 2
+
       1:
-        FullChance: 1000000 # A full chance for a gift
-        Chance: 10 # A chance gift
-        Every: 60 # Checks the chances when the player moves every defined time.
+        # A full chance for a gift
+        FullChance: 1000000
+
+        # A chance gift
+        Chance: 10
+
+        # Checks the chances when the player moves every defined time.
+        Every: 60
         # Measured in ticks, 20 ticks is 1 second.
         # Set the ticks value higher if the plugin starts causing lags.
       2:
-        people: null # How many people will try their luck for Mode 2 (null - disabled for 1 mode, -1 - all players)
-        every: 3600 # In seconds
-    wg_support: 2 # WorldGuard support
+        # How many people will try their luck for Mode 2 (null - disabled for 1 mode, -1 - all players)
+        people: "null"
+        # In seconds
+        every: 3600
+    # WorldGuard support
+    wg_support: 2
     # Ignore the region - 0
     # On command - 1
     # Member/Owner region and __global__ - 2
     # Only __global__ - 3
-    type-worlds: blocked # allowed/blocked
-    worlds: # List of worlds for the type
+
+    # allowed/blocked
+    type-worlds: blocked
+    # List of worlds for the type
+    worlds:
       - "no"
-    type-biomes: blocked # allowed/blocked
-    biomes: # List of biomes for the type
+
+    # allowed/blocked
+    type-biomes: blocked
+    # List of biomes for the type
+    biomes:
       - "no"
-    blocked: # Blocking the spawn of a gift for the player when:
-      fly: true # When he flies
-      shift: true # When he's on the shift
+
+    # Blocking the spawn of a gift for the player when:
+    blocked:
+      # When he flies
+      fly: true
+      # When he's on the shift
+      shift: true

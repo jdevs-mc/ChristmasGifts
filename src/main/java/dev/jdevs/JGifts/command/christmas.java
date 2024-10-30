@@ -67,7 +67,7 @@ public class christmas implements CommandExecutor {
                                 return false;
                             }
                         }
-                        sendMessage(sender, "&c/JumpChristmas newloot santa/grinch Name Amount(from-to) Chance - &fAdd an item to gifts");
+                        sendMessage(sender, "&c/gifts newloot santa/grinch Name Amount(from-to) Chance - &fAdd an item to gifts");
                         return false;
                     }
                     ItemStack hand;
@@ -134,7 +134,7 @@ public class christmas implements CommandExecutor {
             }
             else if (args[0].equalsIgnoreCase("add")) {
                 if (args.length == 1 || args.length > 3) {
-                    sendMessage(sender, "&a/JumpChristmas add Player - &fPlace a gift near the player");
+                    sendMessage(sender, "&a/gifts add Player - &fPlace a gift near the player");
                     return false;
                 }
                 Player p1 = Bukkit.getPlayer(args[1]);
@@ -152,7 +152,7 @@ public class christmas implements CommandExecutor {
             }
             else if (args[0].equalsIgnoreCase("reload")) {
                 if (args.length > 1) {
-                    sendMessage(sender, "&c/JumpChristmas reload - &fReload the plugin");
+                    sendMessage(sender, "&c/gifts reload - &fReload the plugin");
                     return false;
                 }
                 FileConfiguration launch = ConfigManager.of("launch.yml").getYamlConfiguration();
@@ -187,7 +187,7 @@ public class christmas implements CommandExecutor {
             }
             else if (args[0].equalsIgnoreCase("put")) {
                 if (args.length != 3) {
-                    sendMessage(sender, "&c/JumpChristmas put PlayerName Amount - &fSet your gift limit for the player");
+                    sendMessage(sender, "&c/gifts put PlayerName Amount - &fSet your gift limit for the player");
                     return false;
                 }
                 else {
@@ -215,7 +215,7 @@ public class christmas implements CommandExecutor {
             }
             else if (args[0].equalsIgnoreCase("check")) {
                 if (args.length == 1 || args.length >= 3) {
-                    sendMessage(sender, "&c/JumpChristmas check PlayerName - &fCheck player gift limit");
+                    sendMessage(sender, "&c/gifts check PlayerName - &fCheck player gift limit");
                     return false;
                 }
                 String name = args[1];

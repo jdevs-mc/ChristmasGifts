@@ -1,17 +1,15 @@
 package dev.jdevs.JGifts;
 
+import com.tchristofferson.configupdater.ConfigUpdater;
 import dev.jdevs.JGifts.command.christmas;
-import dev.jdevs.JGifts.events.AntiGrief;
-import dev.jdevs.JGifts.events.FallGifts;
-import dev.jdevs.JGifts.events.SpawnGifts;
-import dev.jdevs.JGifts.events.UseGifts;
+import dev.jdevs.JGifts.events.*;
 import dev.jdevs.JGifts.loots.Load;
 import dev.jdevs.JGifts.made.MessageLanguage;
 import dev.jdevs.JGifts.supports.PlaceholderAPI;
 import dev.jdevs.JGifts.utils.ConfigManager;
 import dev.jdevs.JGifts.utils.Configurations;
 import dev.jdevs.JGifts.utils.Message;
-import eu.decentsoftware.holograms.api.DHAPI;
+import eu.decentsoftware.holograms.api.holograms.Hologram;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -21,8 +19,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.util.*;
 
@@ -31,7 +27,7 @@ import static dev.jdevs.JGifts.events.FallGifts.gifts;
 import static dev.jdevs.JGifts.events.FallGifts.removeGifts;
 import static dev.jdevs.JGifts.loots.Loot.dropLoot;
 import static dev.jdevs.JGifts.supports.WG.setBlock;
-import static dev.jdevs.JGifts.utils.Configurations.nicknames;
+import static dev.jdevs.JGifts.utils.Configurations.*;
 
 public final class Christmas extends JavaPlugin implements Listener {
    public static boolean disabled = false;
@@ -51,22 +47,67 @@ public final class Christmas extends JavaPlugin implements Listener {
               "ru",
               "en"
       );
+      String version_launch = "1.1.0";
+      String version_config = "1.0.1";
       if (!(new File(this.getDataFolder(), "launch.yml")).exists()) {
          saveResource("launch.yml", true);
       }
-      YamlConfiguration launch = ConfigManager.of("launch.yml").getYamlConfiguration();
+      else {
+         File fl = new File(this.getDataFolder(), "launch.yml");
+         YamlConfiguration yml = YamlConfiguration.loadConfiguration(fl);
+         if (yml.getString("version") == null || !yml.getString("version").contains(version_launch)) {
+            try {
+               yml.set("version", version_launch);
+               yml.save(fl);
+               ConfigUpdater.update(Christmas.getInstance(), "launch.yml", fl);
+               Bukkit.getLogger().info("[UPDATE] launch.yml has been successfully updated to version " + version_launch);
+            } catch (IOException e) {
+               Bukkit.getLogger().warning("!!!Configuration update failed!!!\n Type: launch.yml");
+               throw new RuntimeException(e);
+            }
+         }
+      }
+      FileConfiguration launch = ConfigManager.of("launch.yml").getYamlConfiguration();
       if (launch.getString("language") == null || !languages.contains(launch.getString("language").toLowerCase())) {
          disabled = true;
          Message.sendLogger("\n&cFinish configuring of the plugin ChristmasGifts before launching it in launch.yml" +
                  "\nЗавершите настройку плагина ChristmasGifts перед его запуском в файле launch.yml&f&r\n");
       }
-      else if (launch.getBoolean("BaseSettings.supports.DecentHolograms") && !Bukkit.getPluginManager().isPluginEnabled("DecentHolograms")) {
-         disabled = true;
-         Message.sendLogger("\n&cInstall plugins on the server: DecentHolograms" +
-                 "\nУстановите на сервер плагин: DecentHolograms&f&r\n");
-      }
       else {
+         String[] ver = getServer().getVersion().split("\\.");
+         if (!ver[0].endsWith("1")) {
+            disabled = true;
+            Bukkit.getLogger().warning("THIS PLUGIN DOES NOT SUPPORT MINECRAFT VERSION >=2. Contact the developer to update the plugin.\n" +
+                    "ДАННЫЙ ПЛАГИН НЕ ПОДДЕРЖИВАЕТ MINECRAFT ВЕРСИЮ >=2. Обратитесь к разработчику для обновления плагина.");
+            return;
+         }
+         version_mode = Integer.parseInt(ver[1]);
+         if (version_mode <= 7) {
+            Bukkit.getLogger().info("Version mode: <=1.7.10");
+            Bukkit.getLogger().info("Here, I felt a strong sense of nostalgia and at the same time fear, but why...\n" +
+                    "in the future, I would like to think about ending support for this version...");
+            if (version_mode <= 6) {
+               Bukkit.getLogger().info("Version mode: <=?6?");
+               Bukkit.getLogger().info("Why...");
+            }
+         }
+         else if (version_mode <= 12) {
+            Bukkit.getLogger().info("Version mode: <=1.12.2");
+            if (version_mode <= 9) {
+               Bukkit.getLogger().info("Nostalgia...");
+            }
+         }
          language = launch.getString("language").toLowerCase();
+         String hologramType = null;
+         if (launch.getString("BaseSettings.supports.HologramType") != null && !launch.getString("BaseSettings.supports.HologramType").contains("null")) {
+            hologramType = launch.getString("BaseSettings.supports.HologramType");
+            if (!Bukkit.getPluginManager().isPluginEnabled(hologramType)) {
+               disabled = true;
+               Message.sendLogger("\n&cInstall plugins on the server: " + hologramType +
+                       "\nУстановите на сервер плагин: " + hologramType + "&f&r\n");
+               return;
+            }
+         }
          if (!(new File(this.getDataFolder(), "config.yml")).exists()) {
             saveResource(language + "\\config.yml", true);
             try {
@@ -77,6 +118,22 @@ public final class Christmas extends JavaPlugin implements Listener {
             } catch (IOException e) {
                e.printStackTrace();
                Bukkit.getLogger().warning("The creation of the config.yml file was incorrect, please contact the administrator.");
+            }
+         }
+         else {
+            File fl = new File(this.getDataFolder(), "config.yml");
+            YamlConfiguration yml = YamlConfiguration.loadConfiguration(fl);
+            if (yml.getString("version") == null || !yml.getString("version").contains(version_config)) {
+               try {
+                  yml.set("version", version_config);
+                  yml.save(fl);
+                  ConfigUpdater.update(Christmas.getInstance(), language + "/config.yml", fl);
+                  yml.set("version", version_config);
+                  Bukkit.getLogger().info("[UPDATE] config.yml has been successfully updated to version " + version_config);
+               } catch (IOException e) {
+                  Bukkit.getLogger().warning("!!!Configuration update failed!!!\n Type: config.yml");
+                  throw new RuntimeException(e);
+               }
             }
          }
          if (!(new File(this.getDataFolder(), "storage\\loot.yml")).exists()) {
@@ -92,56 +149,28 @@ public final class Christmas extends JavaPlugin implements Listener {
          Configurations.config = config;
          Configurations.loot = loot;
          Configurations.nicknames = nicknames;
-         String[] ver = getServer().getVersion().split("\\.");
-         if (!ver[0].endsWith("1")) {
-            disabled = true;
-            Bukkit.getLogger().warning("THIS PLUGIN DOES NOT SUPPORT MINECRAFT VERSION >=2. Contact the developer to update the plugin.\n" +
-                    "ДАННЫЙ ПЛАГИН НЕ ПОДДЕРЖИВАЕТ MINECRAFT ВЕРСИЮ >=2. Обратитесь к разработчику для обновления плагина.");
-            return;
-         }
-         int version = Integer.parseInt(ver[1]);
-         Object type = config.get("settings.gift.spawn.type");
-         version_mode = version;
-         if (version > 13) {
-            SpawnGifts.mt = Material.getMaterial("BARREL");
-            if (type != null) {
-               SpawnGifts.mt = Material.getMaterial(config.getString("settings.gift.spawn.type", "BARREL"));
-            }
-         }
-         else if (version == 13) {
-            SpawnGifts.mt = Material.getMaterial("OAK_PLANKS");
-            if (type != null) {
-               SpawnGifts.mt = Material.getMaterial(config.getString("settings.gift.spawn.type", "OAK_PLANKS"));
-            }
-         }
-         else {
-            try {
-               // Ignore warnings
-               @SuppressWarnings("all")
-               Method mtd = Material.class.getMethod("getMaterial", int.class);
-               //
-               SpawnGifts.mt = (Material) mtd.invoke(Material.class, 5);
-               if (config.get("settings.gift.spawn.id") != null) {
-                  SpawnGifts.mt = (Material) mtd.invoke(Material.class, config.getInt("settings.gift.spawn.id", 5));
-               }
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-               throw new RuntimeException(e);
-            }
-            Bukkit.getLogger().info("Version mode: <=1.12.2");
+         if (hologramType != null) {
+            HologramType = hologramType.toLowerCase();
          }
          if (!Settings.autoGive) {
             getServer().getPluginManager().registerEvents(new AntiGrief(), this); // 1 action, launch protection
+            if (version_mode >= 8) {
+               getServer().getPluginManager().registerEvents(new AntiGriefV8(), this); // 1 action, launch protection
+            }
+            getServer().getPluginManager().registerEvents(new UseGifts(), this); // The player's interaction with the gift to receive it
          }
          if (launch.getInt("BaseSettings.spawn.mode.enabled") == 1) {
             getServer().getPluginManager().registerEvents(new SpawnGifts(), this); // We are starting to spawn gifts
          }
          else if (launch.getInt("BaseSettings.spawn.mode.enabled") == 2) {
-            SpawnGifts.EveryTime(launch.getInt("BaseSettings.spawn.mode.2.people"), launch.getInt("BaseSettings.spawn.mode.2.every"));
+            if (!launch.getString("BaseSettings.spawn.mode.2.people").contains("null")) {
+               SpawnGifts.EveryTime(launch.getInt("BaseSettings.spawn.mode.2.people"), launch.getInt("BaseSettings.spawn.mode.2.every"));
+            }
+            else {
+               Bukkit.getLogger().warning("How many people will receive gifts once in how many is not specified, the mode 2 is disabled.");
+            }
          }
          getServer().getPluginManager().registerEvents(new FallGifts(), this); // We receive a gift using FallBlock and set conditions
-         if (!Settings.autoGive) {
-            getServer().getPluginManager().registerEvents(new UseGifts(), this); // The player's interaction with the gift to receive it
-         }
          if (Settings.Loots) {
             Load.LoadLoots();
          }
@@ -189,11 +218,19 @@ public final class Christmas extends JavaPlugin implements Listener {
                gifts.clear();
             }
          }
-         if (DSupport && !FallGifts.hds.isEmpty()) {
-            for (String loc : FallGifts.hds.values()) {
-               DHAPI.removeHologram(loc);
+         if (HologramType != null) {
+            if (HologramType.contains("decentholograms") && !FallGifts.decentHolograms.isEmpty()) {
+               for (Hologram hd : FallGifts.decentHolograms.values()) {
+                  hd.delete();
+               }
+               FallGifts.decentHolograms.clear();
             }
-            FallGifts.hds.clear();
+            else if (!FallGifts.holographicDisplays.isEmpty()) {
+               for (me.filoghost.holographicdisplays.api.hologram.Hologram hd : FallGifts.holographicDisplays.values()) {
+                  hd.delete();
+               }
+               FallGifts.holographicDisplays.clear();
+            }
          }
          if (version_mode > 12) {
             if (!FallGifts.saveBlock.isEmpty()) {
@@ -233,7 +270,7 @@ public final class Christmas extends JavaPlugin implements Listener {
          public void run() {
             if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
                placeholderAPI.register();
-               Bukkit.getLogger().info("Connection to PlaceholderAPI was successful!");
+               Bukkit.getLogger().info("[ChristmasGifts] Connection to PlaceholderAPI was successful!");
                cancel();
             }
          }

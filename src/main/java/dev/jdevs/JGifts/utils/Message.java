@@ -68,9 +68,18 @@ public class Message {
         else if (lowerCase.startsWith("[sound] ")) {
             playSound(p, formatted);
         }
+        else {
+            p.sendMessage(hex(text));
+        }
     }
     public static void sendMessage(CommandSender sender, String text) {
-        sender.sendMessage(hex(text));
+        String lowerCase = text.toLowerCase();
+        if (!lowerCase.startsWith("[") || lowerCase.startsWith("[message] ")) {
+            sender.sendMessage(hex(text.replace("[message] ", "")));
+        }
+        else {
+            sender.sendMessage(hex(text));
+        }
     }
     public static void sendLogger(String text) {
         Bukkit.getConsoleSender().sendMessage(hex(text));

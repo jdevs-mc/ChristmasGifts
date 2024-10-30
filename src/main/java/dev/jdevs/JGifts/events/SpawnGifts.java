@@ -25,7 +25,6 @@ import static dev.jdevs.JGifts.utils.Configurations.*;
 
 public class SpawnGifts implements Listener {
     public static List<UUID> time = new ArrayList<>();
-    public static Material mt;
     static int all_procent = launch.getInt("BaseSettings.spawn.mode.1.FullChance");
     static int procent = launch.getInt("BaseSettings.spawn.mode.1.Chance");
     static List<String> biomes = launch.getStringList("BaseSettings.spawn.biomes");
@@ -136,6 +135,34 @@ public class SpawnGifts implements Listener {
     }
     public static void fallBlockSpawn(Player p, Location loc) {
         // Continue...
+        Material mt;
+        String type = config.getString("settings.gift.spawn.type");
+        if (version_mode > 13) {
+            mt = Material.getMaterial("BARREL");
+            if (type != null && !type.contains("null")) {
+                mt = Material.getMaterial(config.getString("settings.gift.spawn.type", "BARREL"));
+            }
+        }
+        else if (version_mode == 13) {
+            mt = Material.getMaterial("OAK_PLANKS");
+            if (type != null && !type.contains("null")) {
+                mt = Material.getMaterial(config.getString("settings.gift.spawn.type", "OAK_PLANKS"));
+            }
+        }
+        else {
+            try {
+                // Ignore warnings
+                @SuppressWarnings("all")
+                Method mtd = Material.class.getMethod("getMaterial", int.class);
+                //
+                mt = (Material) mtd.invoke(Material.class, 5);
+                if (config.get("settings.gift.spawn.id") != null) {
+                    mt = (Material) mtd.invoke(Material.class, config.getInt("settings.gift.spawn.id", 5));
+                }
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
         FallingBlock fallingBlock;
         if (version_mode <= 12) {
             try {
@@ -152,7 +179,9 @@ public class SpawnGifts implements Listener {
         if (fallingBlock != null) {
             fallingBlock.setMetadata(key, new FixedMetadataValue(Christmas.getInstance(), String.valueOf(p.getName())));
             fallingBlock.setDropItem(false);
-            fallingBlock.setHurtEntities(false);
+            if (version_mode >= 8) {
+                fallingBlock.setHurtEntities(false);
+            }
         }
         UUID uuid = p.getUniqueId();
         time.add(uuid);

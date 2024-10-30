@@ -16,6 +16,7 @@ import dev.jdevs.JGifts.utils.Configurations;
 import dev.jdevs.JGifts.utils.Message;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
@@ -40,12 +41,14 @@ import static dev.jdevs.JGifts.made.CustomMessages.*;
 import static dev.jdevs.JGifts.supports.WG.*;
 import static dev.jdevs.JGifts.utils.Configurations.config;
 import static dev.jdevs.JGifts.utils.Configurations.nicknames;
+import static dev.jdevs.JGifts.utils.Message.hex;
 
 public class FallGifts implements Listener {
     public static Map<Location, Player> gifts = new HashMap<>();
     public static HashMap<Location, BlockData> saveBlock = new HashMap<>();
     public static HashMap<Location, Map.Entry<Material, Byte>> saveBlock_12 = new HashMap<>();
-    public static HashMap<Location, String> hds = new HashMap<>();
+    public static HashMap<Location, Hologram> decentHolograms = new HashMap<>();
+    public static HashMap<Location, me.filoghost.holographicdisplays.api.hologram.Hologram> holographicDisplays = new HashMap<>();
     @EventHandler
     void FallBlock(EntityChangeBlockEvent event) {
         Entity ent = event.getEntity();
@@ -151,39 +154,59 @@ public class FallGifts implements Listener {
                 skin.setSkullType(SkullType.PLAYER);
                 //noinspection deprecation
                 skin.setRawData((byte) 1);
-                try {
-                    GameProfile profile = new GameProfile(UUID.randomUUID(), "gift");
-                    profile.getProperties().put("textures", new Property("textures", Configurations.config.getString("settings.gift.texture")));
-                    Field profileField = skin.getClass().getDeclaredField("profile");
-                    profileField.setAccessible(true);
-                    profileField.set(skin, profile);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (version_mode >= 8) {
+                    try {
+                        GameProfile profile = new GameProfile(UUID.randomUUID(), "gift");
+                        profile.getProperties().put("textures", new Property("textures", Configurations.config.getString("settings.gift.texture")));
+                        Field profileField = skin.getClass().getDeclaredField("profile");
+                        profileField.setAccessible(true);
+                        profileField.set(skin, profile);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    skin.setOwner("defib");
                 }
             }
             skin.update();
             // We save our gift and notify you about the spawn with the help of fireworks
             gifts.put(b_loc, p);
             ((FallingBlock) ent).setDropItem(false);
-            // Creating a hologram using DHAPI
-            if (DSupport && DHolograms) {
+            // Creating a hologram
+            if (HologramType != null) {
                 String gen_hol = Settings.generateText(8);
                 double Y = b_loc.getY() + Configurations.config.getDouble("settings.holograms.height");
                 Location hdloc = new Location(b.getWorld(), b_loc.getX() + 0.5, Y, b_loc.getZ() + 0.5);
-                DHAPI.createHologram(gen_hol, hdloc);
-                Hologram hd = DHAPI.getHologram(gen_hol);
-                if (hd == null) {
-                    MessageLanguage.send("error", null, "hd == null");
-                    return;
-                }
-                try {
-                    for (String lore : hdstring) {
-                        DHAPI.addHologramLine(hd, lore);
+                if (HologramType.contains("decentholograms")) {
+                    if (DHAPI.getHologram(gen_hol) != null) {
+                        return;
                     }
-                } catch (IllegalArgumentException e) {
-                    MessageLanguage.send("error", null, "settings.holograms.lines");
+                    Hologram hd = DHAPI.createHologram(gen_hol, hdloc);
+                    try {
+                        for (String lore : hdstring) {
+                            DHAPI.addHologramLine(hd, lore);
+                        }
+                    } catch (IllegalArgumentException e) {
+                        MessageLanguage.send("error", null, "settings.holograms.lines");
+                    }
+                    decentHolograms.put(b_loc, hd);
                 }
-                hds.put(b_loc, gen_hol);
+                else {
+                    HolographicDisplaysAPI api = HolographicDisplaysAPI.get(Christmas.getInstance());
+                    me.filoghost.holographicdisplays.api.hologram.Hologram hd = api.createHologram(hdloc);
+                    int line = 0;
+                    try {
+                        for (String lore : hdstring) {
+                            hd.getLines().insertText(line, hex(lore));
+                            line++;
+                        }
+                    } catch (IllegalArgumentException e) {
+                        MessageLanguage.send("error", null, "settings.holograms.lines");
+                    }
+                    holographicDisplays.put(b_loc, hd);
+                }
+
             }
             // We delete the gift in case of inactivity
             new BukkitRunnable() {
@@ -195,9 +218,15 @@ public class FallGifts implements Listener {
                         }
                         setBlock(b_loc, b);
                         gifts.remove(b_loc);
-                        if (DSupport && hds.get(b_loc) != null) {
-                            DHAPI.removeHologram(hds.get(b_loc));
-                            hds.remove(b_loc);
+                        if (HologramType != null) {
+                            if (HologramType.contains("decentholograms") && decentHolograms.get(b_loc) != null) {
+                                decentHolograms.get(b_loc).delete();
+                                decentHolograms.remove(b_loc);
+                            }
+                            else if (holographicDisplays.get(b_loc) != null) {
+                                holographicDisplays.get(b_loc).delete();
+                                holographicDisplays.remove(b_loc);
+                            }
                         }
                         removeGifts(b_loc);
                         for (String lore : stop_gift) {

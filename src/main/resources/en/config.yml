@@ -1,8 +1,10 @@
 ###################################################################
-# JDevs                     v1.0.0                      Christmas #
+# JDevs                     v1.1.0                      Christmas #
 # Christmas                                                 JDevs #
 ###################################################################
-version: 1.0.0 # When updating the plugin, this setting can help to update the configuration for you. (Do not delete)
+
+# When updating the plugin, this setting can help to update the configuration for you. (Do not delete)
+version: 1.0.1
 
 # Values:
 # true - Enable
@@ -13,28 +15,45 @@ version: 1.0.0 # When updating the plugin, this setting can help to update the c
 # /gifts
 
 settings:
-  gift: # Gift Settings
+  # Gift Settings
+  gift:
     # Base64 head texture for gift
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmNlZjlhYTE0ZTg4NDc3M2VhYzEzNGE0ZWU4OTcyMDYzZjQ2NmRlNjc4MzYzY2Y3YjFhMjFhODViNyJ9fX0="
-    limit: true # Restriction on gifts
-    max: 5 # Maximum number of gifts
-    remove: 30 # In seconds. After how long the gift is deleted if it has not been used.
+    # Restriction on gifts
+    limit: true
+    # Maximum number of gifts
+    max: 5
+    # In seconds. After how long the gift is deleted if it has not been used.
+    remove: 30
     spawn:
       # // Set null so that the plugin replaces these settings with its own
-      type: null # For 1.13+ (Setting the FallBlock view for the material) Example: "BARREL"
-      id: null # For ...-1.12.2 (Setting up FallBlock material by id) Example: "5"
-      firework: true # Use of fireworks
-      timeLived: 10 # In seconds. How long will FallBlock's life last if it is not activated?
-  grinch: # Grinch Settings
-    enabled: true # Enable?
-    chance: 20 # A chance for a gift from the grinch
-  loot: # Resource Settings
-    enabled: true # Enable?
-    taked: false # If the gift was not received, the loot automatically drops out of it (When turned off too)
-  holograms: # Hologram Settings
-    enabled: true # Turn on the hologram during the appearance of the gift?
-    height: 1.2 # Height for a hologram
-    lines: # Hologram Lines
+      # For 1.13+ (Setting the FallBlock view for the material) Example: "BARREL"
+      type: "null"
+      # For ...-1.12.2 (Setting up FallBlock material by id) Example: "5"
+      id: "null"
+      # Use of fireworks
+      firework: true
+      # In seconds. How long will FallBlock's life last if it is not activated?
+      timeLived: 10
+  # Grinch Settings
+  grinch:
+    # Enable?
+    enabled: true
+    # A chance for a gift from the grinch
+    chance: 20
+  # Resource Settings
+  loot:
+    # Enable?
+    enabled: true
+    # If the gift was not received, the loot automatically drops out of it (When turned off too)
+    taked: false
+  # Hologram Settings
+  holograms:
+    # // Enabling and disabling is in launch.yml
+    # Height for a hologram
+    height: 1.2
+    # Hologram Lines
+    lines:
       - "&cGift"
       - "&fPress the RMB to open it!"
 actions:
@@ -50,20 +69,25 @@ actions:
   # Built-in functions:
   # %player% - Get the player's name
   # %rnd_player% - Get the name of a random player
-  gift: # When a gift appears
+  gift:
+    # When a gift appears
     spawn:
       - "[message] &f"
       - "[message] &f&l✽ &aSanta Claus&f has sent you &ca gift &f— &cHappy New year! &f&l✽"
       - "[message] &f"
-    loss: # If you lose a gift
+    # If you lose a gift
+    loss:
       - "[message] &f"
       - "[message] &f&l✽ &aSanta Claus&f took &cthe gift &f— &cYou forgot to pick it up! &f&l✽"
       - "[message] &f"
-    success: # The player has successfully collected the gift
+    # The player has successfully collected the gift
+    success:
       - "[message] &f&l✽ &r&fYou have successfully collected the gift"
-    limit: # The player has reached the gift limit
+    # The player has reached the gift limit
+    limit:
       - "[message] &f&l✽ &cYou have already collected a certain number of gifts! :("
-  no_perm: # The player has no permission
+  # The player has no permission
+  no_perm:
     - "[message] &f&l✽ &cYou don't have permission"
 
 ###############################################################

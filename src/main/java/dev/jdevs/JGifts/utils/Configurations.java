@@ -3,7 +3,7 @@ package dev.jdevs.JGifts.utils;
 import dev.jdevs.JGifts.Christmas;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.io.File;
+import java.io.*;
 
 public class Configurations {
     public static FileConfiguration launch;
@@ -13,4 +13,5 @@ public class Configurations {
     public static File getDataFolder(String yml) {
         return new File(Christmas.getInstance().getDataFolder(), yml);
     }
+
 }
