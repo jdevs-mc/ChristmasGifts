@@ -42,7 +42,7 @@ Get a list of commands using /gifts help
  //  On command - 0
  //  Chance when the player moves - 1
  //  Every some time (minutes, hours) - 2
- //  Use mode 2 for a better experience with plug-in performance
+ // **Use mode 2 for a better experience with plug-in performance**
 - Chance adjustment.
 - The lock is spawned in the world, the biome.
 - The lock is spawned with fly and shift.
