@@ -14,13 +14,12 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static dev.jdevs.JGifts.Christmas.version_mode;
 import static dev.jdevs.JGifts.made.MessageLanguage.send;
-import static org.bukkit.Bukkit.getServer;
 
 public class Message {
     public static String hex(String message) {
-        String[] ver = getServer().getVersion().split("\\.");
-        if (Integer.parseInt(ver[1]) < 16) {
+        if (version_mode >= 16) {
             Pattern pattern = Pattern.compile("(#[a-fA-F0-9]{6})");
             for (Matcher matcher = pattern.matcher(message); matcher.find(); matcher = pattern.matcher(message)) {
                 String hexCode = message.substring(matcher.start(), matcher.end());
@@ -89,16 +88,16 @@ public class Message {
         Sound sound;
         int volume = 1;
         int pitch = 1;
-        if (formatted.contains(";")) {
-            String[] split = formatted.split(";");
-            sound = Sound.valueOf(split[0]);
-            volume = Integer.parseInt(split[1]);
-            pitch = Integer.parseInt(split[2]);
-        }
-        else {
-            sound = Sound.valueOf(formatted);
-        }
         try {
+            if (formatted.contains(";")) {
+                String[] split = formatted.split(";");
+                sound = Sound.valueOf(split[0]);
+                volume = Integer.parseInt(split[1]);
+                pitch = Integer.parseInt(split[2]);
+            }
+            else {
+                sound = Sound.valueOf(formatted);
+            }
             p.playSound(p.getLocation(), sound, volume, pitch);
         }
         catch (Exception e) {

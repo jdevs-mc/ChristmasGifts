@@ -74,14 +74,19 @@ public final class Christmas extends JavaPlugin implements Listener {
                  "\nЗавершите настройку плагина ChristmasGifts перед его запуском в файле launch.yml&f&r\n");
       }
       else {
-         String[] ver = getServer().getVersion().split("\\.");
+         String[] ver = getServer().getBukkitVersion().split("\\.");
          if (!ver[0].endsWith("1")) {
             disabled = true;
             Bukkit.getLogger().warning("THIS PLUGIN DOES NOT SUPPORT MINECRAFT VERSION >=2. Contact the developer to update the plugin.\n" +
                     "ДАННЫЙ ПЛАГИН НЕ ПОДДЕРЖИВАЕТ MINECRAFT ВЕРСИЮ >=2. Обратитесь к разработчику для обновления плагина.");
             return;
          }
-         version_mode = Integer.parseInt(ver[1]);
+         if (ver[1].length() >= 2) {
+            version_mode = Integer.parseInt(ver[1].substring(0, 2));
+         }
+         else {
+            version_mode = Integer.parseInt(ver[1]);
+         }
          if (version_mode <= 7) {
             Bukkit.getLogger().info("Version mode: <=1.7.10");
             Bukkit.getLogger().info("Here, I felt a strong sense of nostalgia and at the same time fear, but why...\n" +
