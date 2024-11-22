@@ -105,7 +105,7 @@ public class FallGifts implements Listener {
                 nicknames.set("players." + p.getName(), nicknames.getInt("players." + p.getName()) + 1);
                 if (onCrashes) {
                     try {
-                        nicknames.save(Configurations.getDataFolder("storage\\db.yml"));
+                        nicknames.save(Configurations.getDataFolder("storage/db.yml"));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -128,7 +128,7 @@ public class FallGifts implements Listener {
                 gifts2.add(b_loc.getWorld().getName() + ":" + b_loc.getX() + ":" + b_loc.getY() + ":" + b_loc.getZ());
                 nicknames.set("gifts", gifts2);
                 try {
-                    nicknames.save(Configurations.getDataFolder("storage\\db.yml"));
+                    nicknames.save(Configurations.getDataFolder("storage/db.yml"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -263,7 +263,7 @@ public class FallGifts implements Listener {
                 gifts2.remove(b_loc.getWorld().getName() + ":" + b_loc.getX() + ":" + b_loc.getY() + ":" + b_loc.getZ());
                 nicknames.set("gifts", gifts2);
                 try {
-                    nicknames.save(Configurations.getDataFolder("storage\\db.yml"));
+                    nicknames.save(Configurations.getDataFolder("storage/db.yml"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

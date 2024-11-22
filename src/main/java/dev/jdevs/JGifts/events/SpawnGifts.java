@@ -227,7 +227,7 @@ public class SpawnGifts implements Listener {
                 }
                 if (onCrashes) {
                     try {
-                        nicknames.save(Configurations.getDataFolder("storage\\db.yml"));
+                        nicknames.save(Configurations.getDataFolder("storage/db.yml"));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

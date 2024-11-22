@@ -15,14 +15,14 @@ public class MessageLanguage {
                         "\n" +
                         "&f&l✽ &aС новым годом &f&l✽\n" +
                         "\n" +
-                        "&7Плагин был включён";
+                        "&7Плагин был включён (v1.1.2)";
             } else if (type_message.contains("stop")) {
                 type_message = "\n" +
                         "&f&l✽ &r&fРазработчик: &ahttps://vk.com/jdevs &f&l✽\n" +
                         "\n" +
                         "&f&l✽ &aС новым годом &f&l✽\n" +
                         "\n" +
-                        "&7Плагин был выключен";
+                        "&7Плагин был выключен (v1.1.2)";
             } else if (type_message.contains("help")) {
                 type_message = "&aПомощь:\n" +
                         "\n" +
@@ -55,14 +55,14 @@ public class MessageLanguage {
                         "&f\n" +
                         "&f&l✽ &aHappy New Year &f&l✽\n" +
                         "&f\n" +
-                        "&7The plugin has been enabled";
+                        "&7The plugin has been enabled (v1.1.2)";
             } else if (type_message.contains("stop")) {
                 type_message = "\n" +
                         "&f&l✽ &r&fDeveloper: &ahttps://vk.com/jdevs &f&l✽\n" +
                         "\n" +
                         "&f&l✽ &aHappy New Year &f&l✽\n" +
                         "\n" +
-                        "&7The plugin has been disabled";
+                        "&7The plugin has been disabled (v1.1.2)";
             } else if (type_message.contains("help")) {
                 type_message = "&aHelp:\n" +
                         "\n" +

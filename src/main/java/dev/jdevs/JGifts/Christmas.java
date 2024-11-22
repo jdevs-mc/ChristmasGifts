@@ -114,10 +114,10 @@ public final class Christmas extends JavaPlugin implements Listener {
             }
          }
          if (!(new File(this.getDataFolder(), "config.yml")).exists()) {
-            saveResource(language + "\\config.yml", true);
+            saveResource(language + "/config.yml", true);
             try {
-               Files.move(Configurations.getDataFolder(language + "\\config.yml").toPath(), Configurations.getDataFolder("config.yml").toPath());
-               Configurations.getDataFolder(language + "\\config.yml").deleteOnExit();
+               Files.move(Configurations.getDataFolder(language + "/config.yml").toPath(), Configurations.getDataFolder("config.yml").toPath());
+               Configurations.getDataFolder(language + "/config.yml").deleteOnExit();
                Files.delete(Configurations.getDataFolder(language).toPath());
                Bukkit.getLogger().info("The creation of config.yml was successful");
             } catch (IOException e) {
@@ -141,14 +141,14 @@ public final class Christmas extends JavaPlugin implements Listener {
                }
             }
          }
-         if (!(new File(this.getDataFolder(), "storage\\loot.yml")).exists()) {
-            saveResource("storage\\loot.yml", true);
+         if (!(new File(this.getDataFolder(), "storage/loot.yml")).exists()) {
+            saveResource("storage/loot.yml", true);
          }
-         if (!(new File(this.getDataFolder(), "storage\\db.yml")).exists()) {
-            saveResource("storage\\db.yml", true);
+         if (!(new File(this.getDataFolder(), "storage/db.yml")).exists()) {
+            saveResource("storage/db.yml", true);
          }
-         FileConfiguration loot = ConfigManager.of("storage\\loot.yml").getYamlConfiguration();
-         FileConfiguration nicknames = ConfigManager.of("storage\\db.yml").getYamlConfiguration();
+         FileConfiguration loot = ConfigManager.of("storage/loot.yml").getYamlConfiguration();
+         FileConfiguration nicknames = ConfigManager.of("storage/db.yml").getYamlConfiguration();
          YamlConfiguration config = ConfigManager.of("config.yml").getYamlConfiguration();
          Configurations.launch = launch;
          Configurations.config = config;
@@ -190,7 +190,7 @@ public final class Christmas extends JavaPlugin implements Listener {
                }
                nicknames.set("gifts", gifts2);
                try {
-                  nicknames.save(Configurations.getDataFolder("storage\\db.yml"));
+                  nicknames.save(Configurations.getDataFolder("storage/db.yml"));
                } catch (IOException e) {
                   e.printStackTrace();
                }
@@ -261,7 +261,7 @@ public final class Christmas extends JavaPlugin implements Listener {
             placeholderAPI.unregister();
          }
          try {
-            nicknames.save(Configurations.getDataFolder("storage\\db.yml"));
+            nicknames.save(Configurations.getDataFolder("storage/db.yml"));
          } catch (IOException e) {
             e.printStackTrace();
          }

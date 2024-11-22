@@ -88,7 +88,7 @@ public class christmas implements CommandExecutor {
                     String boss = args[1];
                     String id = args[2];
                     int chance = Integer.parseInt(args[4]);
-                    FileConfiguration loot = ConfigManager.of("storage\\loot.yml").getYamlConfiguration();
+                    FileConfiguration loot = ConfigManager.of("storage/loot.yml").getYamlConfiguration();
                     if (loot.get("loot") == null | !loot.contains("loot")) {
                         loot.createSection("loot");
                     }
@@ -118,7 +118,7 @@ public class christmas implements CommandExecutor {
                     secta.set(id + ".chance", chance);
 
                     try {
-                        loot.save(getDataFolder("storage\\loot.yml"));
+                        loot.save(getDataFolder("storage/loot.yml"));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -157,13 +157,13 @@ public class christmas implements CommandExecutor {
                 }
                 FileConfiguration launch = ConfigManager.of("launch.yml").getYamlConfiguration();
                 FileConfiguration config = ConfigManager.of("config.yml").getYamlConfiguration();
-                FileConfiguration loot = ConfigManager.of("storage\\loot.yml").getYamlConfiguration();
-                if (!(new File(Christmas.getInstance().getDataFolder(), "storage\\loot.yml")).exists()) {
-                    Christmas.getInstance().saveResource("storage\\loot.yml", true);
+                FileConfiguration loot = ConfigManager.of("storage/loot.yml").getYamlConfiguration();
+                if (!(new File(Christmas.getInstance().getDataFolder(), "storage/loot.yml")).exists()) {
+                    Christmas.getInstance().saveResource("storage/loot.yml", true);
                 }
                 if (launch.getBoolean("BaseSettings.limit_gifts")) {
-                    if (!(new File(Christmas.getInstance().getDataFolder(), "storage\\db.yml")).exists()) {
-                        Christmas.getInstance().saveResource("storage\\db.yml", true);
+                    if (!(new File(Christmas.getInstance().getDataFolder(), "storage/db.yml")).exists()) {
+                        Christmas.getInstance().saveResource("storage/db.yml", true);
                     }
                 }
                 Configurations.launch = launch;
@@ -203,7 +203,7 @@ public class christmas implements CommandExecutor {
                         }
                         if (onCrashes) {
                             try {
-                                Configurations.nicknames.save(Configurations.getDataFolder("storage\\db.yml"));
+                                Configurations.nicknames.save(Configurations.getDataFolder("storage/db.yml"));
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
