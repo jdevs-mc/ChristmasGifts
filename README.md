@@ -1,8 +1,10 @@
 # 🎁 **ChristmasGifts**
 ## 🛷 Deliver gifts to your server that will bring pleasant surprises to your players 
 This plugin adds a gift delivery mechanic for your players. 
-- $ Versions 1.7-1.21 are supported.
+- $ Versions 1.7.1-1.21 are supported.
 - $ Has been tested on versions: 1.7.10, 1.8.8, 1.12.2, 1.16.5, 1.21
+
+[![CodeFactor](https://www.codefactor.io/repository/github/jdevs-mc/christmasgifts/badge)](https://www.codefactor.io/repository/github/jdevs-mc/christmasgifts)
 # 🚶 Wander the world
 Wandering around the world, the player can get a gift from Santa, but did the Grinch put his rags in it?
 
