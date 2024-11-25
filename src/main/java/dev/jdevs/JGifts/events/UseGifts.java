@@ -1,48 +1,51 @@
 package dev.jdevs.JGifts.events;
 
-import dev.jdevs.JGifts.made.CustomMessages;
-import dev.jdevs.JGifts.utils.Message;
+import dev.jdevs.JGifts.Christmas;
+import dev.jdevs.JGifts.utils.Values;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import static dev.jdevs.JGifts.Settings.HologramType;
-import static dev.jdevs.JGifts.loots.Loot.dropLoot;
-import static dev.jdevs.JGifts.supports.WG.setBlock;
-
-public class UseGifts implements Listener {
+public final class UseGifts implements Listener {
+    Christmas plugin;
+    private final Values values;
+    public UseGifts(Christmas plugin) {
+        this.plugin = plugin;
+        values = plugin.getValues();
+    }
     @EventHandler
     public void ClickCommand(PlayerInteractEvent event) {
         if (event.hasBlock()) {
             Location block = event.getClickedBlock().getLocation();
             Player p = event.getPlayer();
-            if (!FallGifts.gifts.containsKey(block)) {
+            if (!values.getGifts().containsKey(block)) {
                 return;
             }
-            if (!FallGifts.gifts.get(block).equals(p)) {
+            if (!values.getGifts().get(block).equals(p)) {
                 return;
             }
-            if (HologramType != null) {
-                if (HologramType.contains("decentholograms")) {
-                    FallGifts.decentHolograms.get(block).delete();
-                    FallGifts.decentHolograms.remove(block);
+            String hologramType = values.getHologramType();
+            if (hologramType != null && !hologramType.contains("null")) {
+                if (hologramType.contains("decentholograms")) {
+                    values.getDecentHolograms().get(block).delete();
+                    values.getDecentHolograms().remove(block);
                 }
                 else {
-                    FallGifts.holographicDisplays.get(block).delete();
-                    FallGifts.holographicDisplays.remove(block);
+                    values.getHolographicDisplays().get(block).delete();
+                    values.getHolographicDisplays().remove(block);
                 }
             }
-            FallGifts.gifts.remove(block);
+            values.getGifts().remove(block);
             // Drop loot
-            dropLoot(block);
+            plugin.getLoad().dropLoot(block);
             //
-            for (String msg : CustomMessages.success) {
-                Message.sendMessage(event.getPlayer(), msg);
+            for (String msg : values.getSuccess()) {
+                plugin.getMessages().sendMessage(event.getPlayer(), msg);
             }
             org.bukkit.block.Block b = block.getBlock();
-            setBlock(block, b);
+            plugin.getWg().setBlock(block, b);
         }
     }
 }

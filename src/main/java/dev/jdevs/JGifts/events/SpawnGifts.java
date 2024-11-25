@@ -1,10 +1,11 @@
 package dev.jdevs.JGifts.events;
 
 import dev.jdevs.JGifts.Christmas;
-import dev.jdevs.JGifts.utils.Configurations;
+import dev.jdevs.JGifts.utils.Values;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,140 +14,140 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static dev.jdevs.JGifts.Christmas.version_mode;
-import static dev.jdevs.JGifts.Settings.*;
-import static dev.jdevs.JGifts.utils.Configurations.*;
-
-public class SpawnGifts implements Listener {
-    public static List<UUID> time = new ArrayList<>();
-    static int all_procent = launch.getInt("BaseSettings.spawn.mode.1.FullChance");
-    static int procent = launch.getInt("BaseSettings.spawn.mode.1.Chance");
-    static List<String> biomes = launch.getStringList("BaseSettings.spawn.biomes");
-    public static List<String> worlds = launch.getStringList("BaseSettings.spawn.worlds");
-    static String type_world = launch.getString("BaseSettings.spawn.type-worlds");
-    static String type_biome = launch.getString("BaseSettings.spawn.type-biomes");
-    static Integer every = launch.getInt("BaseSettings.spawn.mode.1.every");
+public final class SpawnGifts implements Listener {
+    Christmas plugin;
+    private final Values values;
+    public SpawnGifts(Christmas plugin) {
+        this.plugin = plugin;
+        values = plugin.getValues();
+    }
 
     @EventHandler
     public void onMoveRandom(PlayerMoveEvent event) {
         Player p = event.getPlayer();
         UUID uuid = p.getUniqueId();
-        if (time.contains(uuid)) {
+        if (values.getTime().contains(uuid)) {
             return;
         }
-        if (wg != 1 && procent >= ThreadLocalRandom.current().nextInt(all_procent)) {
+        if (values.getWg() != 1 && values.getProcent() >= ThreadLocalRandom.current().nextInt(values.getAll_procent())) {
             // We check the actions blocked for the player
-            if (launch.getBoolean("BaseSettings.spawn.blocked.fly")) {
+            if (values.isFly()) {
                 if (p.isFlying()) {
                     return;
                 }
             }
-            if (launch.getBoolean("BaseSettings.spawn.blocked.shift")) {
+            if (values.isShift()) {
                 if (p.isSneaking()) {
                     return;
                 }
             }
-            if (CheckLimitGifts(p)) {
+            if (checkLimitGifts(p)) {
                 Spawn(p);
             }
         } else {
-            time.add(uuid);
+            values.getTime().add(uuid);
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    time.remove(uuid);
+                    values.getTime().remove(uuid);
                 }
-            }.runTaskLater(Christmas.getInstance(), every);
+            }.runTaskLater(plugin, values.getEvery());
         }
     }
 
-    public static void EveryTime(int people, int seconds) {
+    public void EveryTime(int people, int seconds) {
         if (people == -1) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (!Bukkit.getOnlinePlayers().isEmpty()) {
+                    if (Bukkit.getOnlinePlayers().size() != 0) {
                         for (Player p : Bukkit.getOnlinePlayers()) {
-                            if (CheckLimitGifts(p)) {
+                            if (checkLimitGifts(p)) {
                                 Spawn(p);
                             }
                         }
                     }
                 }
-            }.runTaskTimer(Christmas.getInstance(), seconds * 20L, seconds * 20L);
+            }.runTaskTimer(plugin, seconds * 20L, seconds * 20L);
         } else {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (Bukkit.getOnlinePlayers().size() == people) {
-                        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-                        new BukkitRunnable() {
-                            int ok;
-
-                            @Override
-                            public void run() {
-                                ok++;
-                                Player p = players.get(ThreadLocalRandom.current().nextInt(players.size()));
-                                if (CheckLimitGifts(p)) {
-                                    Spawn(p);
-                                }
-                                if (ok == people) {
-                                    cancel();
-                                }
-                            }
-                        }.runTaskTimer(Christmas.getInstance(), 1, 1);
+                    if (Bukkit.getOnlinePlayers().size() >= people) {
+                        task(people);
                     }
                 }
-            }.runTaskTimer(Christmas.getInstance(), seconds * 20L, seconds * 20L);
+            }.runTaskTimer(plugin, seconds * 20L, seconds * 20L);
         }
     }
+    void task(int people) {
+        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        new BukkitRunnable() {
+            int ok = 0;
 
-    static void Spawn(Player p) {
+            @Override
+            public void run() {
+                ok++;
+                Player p = players.get(ThreadLocalRandom.current().nextInt(players.size()));
+                if (checkLimitGifts(p)) {
+                    Spawn(p);
+                }
+                if (ok >= people) {
+                    players.clear();
+                    cancel();
+                }
+            }
+        }.runTaskTimer(plugin, 1, 1);
+    }
+
+    void Spawn(Player p) {
         Location loc = p.getLocation();
         // Checking the world and the biomes
         String world_name = loc.getWorld().getName().toLowerCase();
-        if (type_world.contains("allowed")) {
-            if (!worlds.contains(world_name)) {
+        if (values.getType_world().contains("allowed")) {
+            if (!values.getWorlds().contains(world_name)) {
                 return;
             }
         } else {
-            if (worlds.contains(world_name)) {
+            if (values.getWorlds().contains(world_name)) {
                 return;
             }
         }
         String biome_name = loc.getBlock().getBiome().name().toLowerCase();
-        if (type_biome.contains("allowed")) {
-            if (!biomes.contains(biome_name)) {
+        if (values.getType_biome().contains("allowed")) {
+            if (!values.getBiomes().contains(biome_name)) {
                 return;
             }
         } else {
-            if (biomes.contains(biome_name)) {
+            if (values.getBiomes().contains(biome_name)) {
                 return;
             }
         }
         // Spawn a gifts
-        fallBlockSpawn(p, SearchLocation(p, 3, loc.getYaw()));
+        fallBlockSpawn(p, searchLocation(p, 3, loc.getYaw()));
     }
-    public static void fallBlockSpawn(Player p, Location loc) {
+    public void fallBlockSpawn(Player p, Location loc) {
         // Continue...
         Material mt;
-        String type = config.getString("settings.gift.spawn.type");
+        String type = values.getType();
+        int version_mode = plugin.getVersion_mode();
         if (version_mode > 13) {
             mt = Material.getMaterial("BARREL");
             if (type != null && !type.contains("null")) {
-                mt = Material.getMaterial(config.getString("settings.gift.spawn.type", "BARREL"));
+                mt = Material.getMaterial(type);
             }
         }
         else if (version_mode == 13) {
             mt = Material.getMaterial("OAK_PLANKS");
             if (type != null && !type.contains("null")) {
-                mt = Material.getMaterial(config.getString("settings.gift.spawn.type", "OAK_PLANKS"));
+                mt = Material.getMaterial(type);
             }
         }
         else {
@@ -156,8 +157,8 @@ public class SpawnGifts implements Listener {
                 Method mtd = Material.class.getMethod("getMaterial", int.class);
                 //
                 mt = (Material) mtd.invoke(Material.class, 5);
-                if (config.get("settings.gift.spawn.id") != null) {
-                    mt = (Material) mtd.invoke(Material.class, config.getInt("settings.gift.spawn.id", 5));
+                if (values.getId() != 0) {
+                    mt = (Material) mtd.invoke(Material.class, values.getId());
                 }
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 throw new RuntimeException(e);
@@ -177,27 +178,27 @@ public class SpawnGifts implements Listener {
             fallingBlock = p.getWorld().spawnFallingBlock(loc, mt.createBlockData());
         }
         if (fallingBlock != null) {
-            fallingBlock.setMetadata(key, new FixedMetadataValue(Christmas.getInstance(), String.valueOf(p.getName())));
+            fallingBlock.setMetadata(values.getKey(), new FixedMetadataValue(plugin, String.valueOf(p.getName())));
             fallingBlock.setDropItem(false);
             if (version_mode >= 8) {
                 fallingBlock.setHurtEntities(false);
             }
         }
         UUID uuid = p.getUniqueId();
-        time.add(uuid);
+        values.getTime().add(uuid);
         new BukkitRunnable() {
             @Override
-            public void run () {
-                if (time.contains(uuid)) {
-                    if (fallingBlock != null) {
-                        time.remove(uuid);
+            public void run() {
+                if (fallingBlock != null) {
+                    if (values.getTime().contains(uuid)) {
+                        values.getTime().remove(uuid);
                         fallingBlock.remove();
                     }
                 }
             }
-        }.runTaskLater(Christmas.getInstance(), config.getInt("settings.gift.spawn.timeLived") * 20L);
+        }.runTaskLater(plugin, values.getTimeLived() * 20L);
     }
-    public static Location SearchLocation(Player p, int height, float yw) {
+    public Location searchLocation(Player p, int height, float yw) {
         Location loc = p.getLocation();
         yw = (yw % 360 + 360) % 360;
         // Spawn a gifts
@@ -215,19 +216,20 @@ public class SpawnGifts implements Listener {
         }
         return new Location(loc.getWorld(), X, Y, Z);
     }
-    public static Boolean CheckLimitGifts(Player p) {
+    public Boolean checkLimitGifts(Player p) {
         // Checking the limit gifts
-        if (limit) {
-            if (max <= nicknames.getInt("players." + p.getName(), 0)) {
+        if (values.isLimit()) {
+            YamlConfiguration nicknames = plugin.getNicknames();
+            if (values.getMax() <= nicknames.getInt("players." + p.getName(), 0)) {
                 return false;
             }
             else {
                 if (!nicknames.contains("players." + p.getName())) {
                     nicknames.set("players." + p.getName(), 0);
                 }
-                if (onCrashes) {
+                if (values.isOnCrashes()) {
                     try {
-                        nicknames.save(Configurations.getDataFolder("storage/db.yml"));
+                        nicknames.save(new File(plugin.getDataFolder(), "storage/db.yml"));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -235,14 +237,5 @@ public class SpawnGifts implements Listener {
             }
         }
         return true;
-    }
-    public static void Update() {
-        all_procent = launch.getInt("BaseSettings.spawn.mode.1.FullChance");
-        every = launch.getInt("BaseSettings.spawn.mode.1.every");
-        procent = launch.getInt("BaseSettings.spawn.mode.1.Chance");
-        biomes = launch.getStringList("BaseSettings.spawn.biomes");
-        worlds = launch.getStringList("BaseSettings.spawn.worlds");
-        type_world = launch.getString("BaseSettings.spawn.type-worlds");
-        type_biome = launch.getString("BaseSettings.spawn.type-biomes");
     }
 }

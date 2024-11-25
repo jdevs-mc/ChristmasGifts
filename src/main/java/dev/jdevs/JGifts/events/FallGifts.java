@@ -10,17 +10,14 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import dev.jdevs.JGifts.Christmas;
-import dev.jdevs.JGifts.Settings;
-import dev.jdevs.JGifts.made.MessageLanguage;
-import dev.jdevs.JGifts.utils.Configurations;
-import dev.jdevs.JGifts.utils.Message;
+import dev.jdevs.JGifts.utils.Values;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,44 +25,44 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import static dev.jdevs.JGifts.Christmas.version_mode;
-import static dev.jdevs.JGifts.Settings.*;
-import static dev.jdevs.JGifts.loots.Loot.dropLoot;
-import static dev.jdevs.JGifts.made.CustomMessages.*;
-import static dev.jdevs.JGifts.supports.WG.*;
-import static dev.jdevs.JGifts.utils.Configurations.config;
-import static dev.jdevs.JGifts.utils.Configurations.nicknames;
-import static dev.jdevs.JGifts.utils.Message.hex;
-
-public class FallGifts implements Listener {
-    public static Map<Location, Player> gifts = new HashMap<>();
-    public static HashMap<Location, BlockData> saveBlock = new HashMap<>();
-    public static HashMap<Location, Map.Entry<Material, Byte>> saveBlock_12 = new HashMap<>();
-    public static HashMap<Location, Hologram> decentHolograms = new HashMap<>();
-    public static HashMap<Location, me.filoghost.holographicdisplays.api.hologram.Hologram> holographicDisplays = new HashMap<>();
+public final class FallGifts implements Listener {
+    Christmas plugin;
+    String key;
+    private final Values values;
+    public FallGifts(Christmas plugin) {
+        this.plugin = plugin;
+        values = plugin.getValues();
+        key = values.getKey();
+    }
+    private void sendMessage(Player sender, String text) {
+        plugin.getMessages().sendMessage(sender, text);
+    }
     @EventHandler
     void FallBlock(EntityChangeBlockEvent event) {
         Entity ent = event.getEntity();
         if (ent instanceof FallingBlock) {
-            if (!ent.hasMetadata(Settings.key)) {
+            if (!ent.hasMetadata(key)) {
                 return;
             }
             event.setCancelled(true);
             ((FallingBlock) ent).setDropItem(false);
-            Player p = Bukkit.getPlayer(String.valueOf(ent.getMetadata(Settings.key).get(0).value()));
+            Player p = Bukkit.getPlayer(String.valueOf(ent.getMetadata(key).get(0).value()));
             Block b = ent.getLocation().getBlock();
             Location b_loc = b.getLocation();
             // Checking the WorldGuard
-            if (Settings.WorldGuard) {
-                RegionManager regionManager = getRegionManager(b_loc);
-                if (Settings.wg == 2 || Settings.wg == 3) {
+            if (values.isWorldGuard()) {
+                RegionManager regionManager = plugin.getWg().getRegionManager(b_loc);
+                int wg = values.getWg();
+                if (wg == 2 || wg == 3) {
                     ApplicableRegionSet regionSet;
+                    int version_mode = plugin.getVersion_mode();
                     if (version_mode > 12) {
                         BlockVector3 vec = BlockVector3.at(b_loc.getX(), b_loc.getY(), b_loc.getZ());
                         regionSet = regionManager.getApplicableRegions(vec);
@@ -82,14 +79,14 @@ public class FallGifts implements Listener {
                             throw new RuntimeException(e);
                         }
                     }
-                    if (Settings.wg == 2) {
+                    if (wg == 2) {
                         LocalPlayer p2 = WorldGuardPlugin.inst().wrapPlayer(p);
                         if (!regionSet.isMemberOfAll(p2)) {
                             if (!regionSet.isOwnerOfAll(p2)) {
                                 return;
                             }
                         }
-                    } else if (Settings.wg == 3) {
+                    } else {
                         if (!regionSet.getRegions().isEmpty()) {
                             return;
                         }
@@ -97,30 +94,33 @@ public class FallGifts implements Listener {
                 }
             }
             // We save the previous data of the block and replace it with our gift
-            if (Configurations.config.getBoolean("settings.gift.spawn.firework")) {
+            if (values.isFirework()) {
                 spawnFirework(b_loc);
             }
             // Add limit gift
-            if (limit) {
+            if (values.isLimit()) {
+                YamlConfiguration nicknames = plugin.getNicknames();
                 nicknames.set("players." + p.getName(), nicknames.getInt("players." + p.getName()) + 1);
-                if (onCrashes) {
+                if (values.isOnCrashes()) {
                     try {
-                        nicknames.save(Configurations.getDataFolder("storage/db.yml"));
+                        nicknames.save(new File(plugin.getDataFolder(), "storage/db.yml"));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
-            for (String lore : start_gift) {
-                Message.sendMessage(p, lore);
+            for (String lore : values.getStart_gift()) {
+                sendMessage(p, lore);
             }
+            int version_mode = plugin.getVersion_mode();
             UUID uuid = p.getUniqueId();
-            SpawnGifts.time.remove(uuid);
-            if (autoGive) {
-                dropLoot(b_loc);
+            values.getTime().remove(uuid);
+            if (values.isAutoGive()) {
+                plugin.getLoad().dropLoot(b_loc);
                 return;
             }
-            if (onCrashes) {
+            if (values.isOnCrashes()) {
+                YamlConfiguration nicknames = plugin.getNicknames();
                 List<String> gifts2 = new ArrayList<>();
                 if (nicknames.getStringList("gifts") != null) {
                     gifts2 = new ArrayList<>(nicknames.getStringList("gifts"));
@@ -128,23 +128,23 @@ public class FallGifts implements Listener {
                 gifts2.add(b_loc.getWorld().getName() + ":" + b_loc.getX() + ":" + b_loc.getY() + ":" + b_loc.getZ());
                 nicknames.set("gifts", gifts2);
                 try {
-                    nicknames.save(Configurations.getDataFolder("storage/db.yml"));
+                    nicknames.save(new File(plugin.getDataFolder(), "storage/db.yml"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             Skull skin;
             if (version_mode > 12) {
-                saveBlock.put(b_loc, b.getBlockData());
+                values.getSaveBlock().put(b_loc, b.getBlockData());
                 b.setType(Material.PLAYER_HEAD);
                 skin = (Skull) b.getState();
                 PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
-                profile.setProperty(new ProfileProperty("textures", Configurations.config.getString("settings.gift.texture")));
+                profile.setProperty(new ProfileProperty("textures", values.getTexture()));
                 skin.setPlayerProfile(profile);
             } else {
                 try {
                     Method method = ((Object) b).getClass().getMethod("getData");
-                    saveBlock_12.put(b_loc, new AbstractMap.SimpleEntry<>(b.getType(), (Byte) method.invoke(b)));
+                    values.getSaveBlock_12().put(b_loc, new AbstractMap.SimpleEntry<>(b.getType(), (Byte) method.invoke(b)));
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                     throw new RuntimeException(e);
                 }
@@ -157,7 +157,7 @@ public class FallGifts implements Listener {
                 if (version_mode >= 8) {
                     try {
                         GameProfile profile = new GameProfile(UUID.randomUUID(), "gift");
-                        profile.getProperties().put("textures", new Property("textures", Configurations.config.getString("settings.gift.texture")));
+                        profile.getProperties().put("textures", new Property("textures", values.getTexture()));
                         Field profileField = skin.getClass().getDeclaredField("profile");
                         profileField.setAccessible(true);
                         profileField.set(skin, profile);
@@ -171,40 +171,41 @@ public class FallGifts implements Listener {
             }
             skin.update();
             // We save our gift and notify you about the spawn with the help of fireworks
-            gifts.put(b_loc, p);
+            values.getGifts().put(b_loc, p);
             ((FallingBlock) ent).setDropItem(false);
+            String hologramType = values.getHologramType();
             // Creating a hologram
-            if (HologramType != null) {
-                String gen_hol = Settings.generateText(8);
-                double Y = b_loc.getY() + Configurations.config.getDouble("settings.holograms.height");
+            if (hologramType != null && !hologramType.contains("null")) {
+                String gen_hol = values.generateText(8);
+                double Y = b_loc.getY() + values.getHeight();
                 Location hdloc = new Location(b.getWorld(), b_loc.getX() + 0.5, Y, b_loc.getZ() + 0.5);
-                if (HologramType.contains("decentholograms")) {
+                if (hologramType.contains("decentholograms")) {
                     if (DHAPI.getHologram(gen_hol) != null) {
                         return;
                     }
                     Hologram hd = DHAPI.createHologram(gen_hol, hdloc);
                     try {
-                        for (String lore : hdstring) {
+                        for (String lore : values.getHdstring()) {
                             DHAPI.addHologramLine(hd, lore);
                         }
                     } catch (IllegalArgumentException e) {
-                        MessageLanguage.send("error", null, "settings.holograms.lines");
+                        plugin.getSends().send("error", null, "settings.holograms.lines");
                     }
-                    decentHolograms.put(b_loc, hd);
+                    values.getDecentHolograms().put(b_loc, hd);
                 }
                 else {
-                    HolographicDisplaysAPI api = HolographicDisplaysAPI.get(Christmas.getInstance());
+                    HolographicDisplaysAPI api = HolographicDisplaysAPI.get(plugin);
                     me.filoghost.holographicdisplays.api.hologram.Hologram hd = api.createHologram(hdloc);
                     int line = 0;
                     try {
-                        for (String lore : hdstring) {
-                            hd.getLines().insertText(line, hex(lore));
+                        for (String lore : values.getHdstring()) {
+                            hd.getLines().insertText(line, plugin.getMessages().hex(lore));
                             line++;
                         }
                     } catch (IllegalArgumentException e) {
-                        MessageLanguage.send("error", null, "settings.holograms.lines");
+                        plugin.getSends().send("error", null, "settings.holograms.lines");
                     }
-                    holographicDisplays.put(b_loc, hd);
+                    values.getHolographicDisplays().put(b_loc, hd);
                 }
 
             }
@@ -212,32 +213,32 @@ public class FallGifts implements Listener {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (gifts.containsKey(b_loc)) {
-                        if (takedLoot) {
-                            dropLoot(b_loc);
+                    if (values.getGifts().containsKey(b_loc)) {
+                        if (!values.isTakedLoot()) {
+                            plugin.getLoad().dropLoot(b_loc);
                         }
-                        setBlock(b_loc, b);
-                        gifts.remove(b_loc);
-                        if (HologramType != null) {
-                            if (HologramType.contains("decentholograms") && decentHolograms.get(b_loc) != null) {
-                                decentHolograms.get(b_loc).delete();
-                                decentHolograms.remove(b_loc);
+                        plugin.getWg().setBlock(b_loc, b);
+                        values.getGifts().remove(b_loc);
+                        if (hologramType != null) {
+                            if (hologramType.contains("decentholograms") && values.getDecentHolograms().get(b_loc) != null) {
+                                values.getDecentHolograms().get(b_loc).delete();
+                                values.getDecentHolograms().remove(b_loc);
                             }
-                            else if (holographicDisplays.get(b_loc) != null) {
-                                holographicDisplays.get(b_loc).delete();
-                                holographicDisplays.remove(b_loc);
+                            else if (values.getHolographicDisplays().get(b_loc) != null) {
+                                values.getHolographicDisplays().get(b_loc).delete();
+                                values.getHolographicDisplays().remove(b_loc);
                             }
                         }
                         removeGifts(b_loc);
-                        for (String lore : stop_gift) {
-                            Message.sendMessage(p, lore);
+                        for (String lore : values.getStop_gift()) {
+                            sendMessage(p, lore);
                         }
                         cancel();
                     } else {
                         cancel();
                     }
                 }
-            }.runTaskLater(Christmas.getInstance(), config.getInt("settings.gift.remove") * 20L);
+            }.runTaskLater(plugin, values.getRemove() * 20L);
         }
     }
     void spawnFirework(Location location2) {
@@ -256,14 +257,15 @@ public class FallGifts implements Listener {
         fireworkMeta.setPower(0);
         firework.setFireworkMeta(fireworkMeta);
     }
-    public static void removeGifts(Location b_loc) {
-        if (onCrashes) {
+    public void removeGifts(Location b_loc) {
+        if (values.isOnCrashes()) {
+            YamlConfiguration nicknames = plugin.getNicknames();
             if (nicknames.getStringList("gifts") != null) {
                 List<String> gifts2 = new ArrayList<>(nicknames.getStringList("gifts"));
                 gifts2.remove(b_loc.getWorld().getName() + ":" + b_loc.getX() + ":" + b_loc.getY() + ":" + b_loc.getZ());
                 nicknames.set("gifts", gifts2);
                 try {
-                    nicknames.save(Configurations.getDataFolder("storage/db.yml"));
+                    nicknames.save(new File(plugin.getDataFolder(), "storage/db.yml"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

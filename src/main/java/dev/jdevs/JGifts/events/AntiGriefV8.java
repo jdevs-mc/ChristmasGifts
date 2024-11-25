@@ -1,17 +1,20 @@
 package dev.jdevs.JGifts.events;
 
+import dev.jdevs.JGifts.Christmas;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExplodeEvent;
 
-import static dev.jdevs.JGifts.events.FallGifts.gifts;
-
-public class AntiGriefV8 implements Listener {
+public final class AntiGriefV8 implements Listener {
+    Christmas plugin;
+    public AntiGriefV8(Christmas plugin) {
+        this.plugin = plugin;
+    }
     @EventHandler
     void Explode(BlockExplodeEvent event) {
-        if (gifts.isEmpty()) {
+        if (plugin.getValues().getGifts().isEmpty()) {
             return;
         }
-        event.blockList().removeIf(b -> gifts.containsKey(b.getLocation()));
+        event.blockList().removeIf(b -> plugin.getValues().getGifts().containsKey(b.getLocation()));
     }
 }

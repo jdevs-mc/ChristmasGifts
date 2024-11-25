@@ -1,6 +1,6 @@
 package dev.jdevs.JGifts.utils;
 
-import dev.jdevs.JGifts.Settings;
+import dev.jdevs.JGifts.Christmas;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,11 +14,16 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static dev.jdevs.JGifts.Christmas.version_mode;
-import static dev.jdevs.JGifts.made.MessageLanguage.send;
-
-public class Message {
-    public static String hex(String message) {
+public final class Message {
+    private final Christmas plugin;
+    private final int version_mode;
+    private final boolean isPlaceholderAPI;
+    public Message(Christmas plugin) {
+        this.plugin = plugin;
+        version_mode = plugin.getVersion_mode();
+        isPlaceholderAPI = plugin.getValues().isPlaceholderAPI();
+    }
+    public String hex(String message) {
         if (version_mode >= 16) {
             Pattern pattern = Pattern.compile("(#[a-fA-F0-9]{6})");
             for (Matcher matcher = pattern.matcher(message); matcher.find(); matcher = pattern.matcher(message)) {
@@ -34,7 +39,7 @@ public class Message {
         }
         return ChatColor.translateAlternateColorCodes('&', message).replace('&', '§');
     }
-    public static void sendMessage(Player p, String text) {
+    public void sendMessage(Player p, String text) {
         if (text == null) {
             return;
         }
@@ -47,7 +52,7 @@ public class Message {
             formatted = formatted.replace("%rnd_player%", name);
         }
         String lowerCase = formatted.toLowerCase();
-        if (Settings.PlaceholderAPI) {
+        if (isPlaceholderAPI) {
             formatted = PlaceholderAPI.setPlaceholders(p, formatted);
         }
         if (!lowerCase.startsWith("[") || lowerCase.startsWith("[message] ")) {
@@ -71,7 +76,7 @@ public class Message {
             p.sendMessage(hex(text));
         }
     }
-    public static void sendMessage(CommandSender sender, String text) {
+    public void sendMessage(CommandSender sender, String text) {
         String lowerCase = text.toLowerCase();
         if (!lowerCase.startsWith("[") || lowerCase.startsWith("[message] ")) {
             sender.sendMessage(hex(text.replace("[message] ", "")));
@@ -80,10 +85,10 @@ public class Message {
             sender.sendMessage(hex(text));
         }
     }
-    public static void sendLogger(String text) {
+    public void sendLogger(String text) {
         Bukkit.getConsoleSender().sendMessage(hex(text));
     }
-    public static void playSound(Player p, String formatted) {
+    private void playSound(Player p, String formatted) {
         formatted = formatted.replace("[sound] ", "");
         Sound sound;
         int volume = 1;
@@ -101,7 +106,7 @@ public class Message {
             p.playSound(p.getLocation(), sound, volume, pitch);
         }
         catch (Exception e) {
-            send("error", null, "An error occurred when calling sound from the configuration");
+            plugin.getSends().send("error", null, "An error occurred when calling sound from the configuration");
             e.printStackTrace();
         }
     }

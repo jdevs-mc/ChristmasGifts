@@ -1,12 +1,16 @@
 package dev.jdevs.JGifts.made;
 
-import dev.jdevs.JGifts.Settings;
-import dev.jdevs.JGifts.utils.Message;
 import dev.jdevs.JGifts.Christmas;
 import org.bukkit.entity.Player;
 
-public class MessageLanguage {
-    public static void send(String type_message, Player p, String obj) {
+public final class MessageLanguage {
+    Christmas plugin;
+    private final boolean debug;
+    public MessageLanguage(Christmas plugin) {
+        this.plugin = plugin;
+        debug = plugin.getValues().isDebug();
+    }
+    public void send(String type_message, Player p, String obj) {
         if (Christmas.language.contains("ru")) {
             // Russian language
             if (type_message.contains("start")) {
@@ -15,14 +19,14 @@ public class MessageLanguage {
                         "\n" +
                         "&f&l✽ &aС новым годом &f&l✽\n" +
                         "\n" +
-                        "&7Плагин был включён (v1.1.2)";
+                        "&7Плагин был включён (v1.1.3)";
             } else if (type_message.contains("stop")) {
                 type_message = "\n" +
                         "&f&l✽ &r&fРазработчик: &ahttps://vk.com/jdevs &f&l✽\n" +
                         "\n" +
                         "&f&l✽ &aС новым годом &f&l✽\n" +
                         "\n" +
-                        "&7Плагин был выключен (v1.1.2)";
+                        "&7Плагин был выключен (v1.1.3)";
             } else if (type_message.contains("help")) {
                 type_message = "&aПомощь:\n" +
                         "\n" +
@@ -40,11 +44,12 @@ public class MessageLanguage {
                 type_message = "&aИгрок уже забрал определённое количество подарков! :(\n" +
                         "Добавьте -f для выполнения команды.";
             } else if (type_message.contains("error")) {
-                if (Settings.debug) {
-                    type_message = "&c[DEBUG] Была обнаружена ошибка: ";
-                    if (obj != null) {
-                        type_message = type_message + obj;
-                    }
+                if (!debug) {
+                    return;
+                }
+                type_message = "&c[DEBUG] Была обнаружена ошибка: ";
+                if (obj != null) {
+                    type_message = type_message + obj;
                 }
             }
         } else {
@@ -55,14 +60,14 @@ public class MessageLanguage {
                         "&f\n" +
                         "&f&l✽ &aHappy New Year &f&l✽\n" +
                         "&f\n" +
-                        "&7The plugin has been enabled (v1.1.2)";
+                        "&7The plugin has been enabled (v1.1.3)";
             } else if (type_message.contains("stop")) {
                 type_message = "\n" +
                         "&f&l✽ &r&fDeveloper: &ahttps://vk.com/jdevs &f&l✽\n" +
                         "\n" +
                         "&f&l✽ &aHappy New Year &f&l✽\n" +
                         "\n" +
-                        "&7The plugin has been disabled (v1.1.2)";
+                        "&7The plugin has been disabled (v1.1.3)";
             } else if (type_message.contains("help")) {
                 type_message = "&aHelp:\n" +
                         "\n" +
@@ -81,7 +86,7 @@ public class MessageLanguage {
                         "Add -f to the command to execute.";
             }
             else if (type_message.contains("error")) {
-                if (!Settings.debug) {
+                if (!debug) {
                     return;
                 }
                 type_message = "&c[DEBUG] An error was found: ";
@@ -92,9 +97,9 @@ public class MessageLanguage {
         }
         // Defining the type of language message
         if (p != null) {
-            Message.sendMessage(p, type_message);
+            plugin.getMessages().sendMessage(p, type_message);
         } else {
-            Message.sendLogger(type_message);
+            plugin.getMessages().sendLogger(type_message);
         }
     }
 }
