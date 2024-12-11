@@ -19,14 +19,14 @@ public final class MessageLanguage {
                         "\n" +
                         "&f&l✽ &aС новым годом &f&l✽\n" +
                         "\n" +
-                        "&7Плагин был включён (v1.1.3)";
+                        "&7Плагин был включён.";
             } else if (type_message.contains("stop")) {
                 type_message = "\n" +
                         "&f&l✽ &r&fРазработчик: &ahttps://vk.com/jdevs &f&l✽\n" +
                         "\n" +
                         "&f&l✽ &aС новым годом &f&l✽\n" +
                         "\n" +
-                        "&7Плагин был выключен (v1.1.3)";
+                        "&7Плагин был выключен (v1.2.0)";
             } else if (type_message.contains("help")) {
                 type_message = "&aПомощь:\n" +
                         "\n" +
@@ -52,6 +52,9 @@ public final class MessageLanguage {
                     type_message = type_message + obj;
                 }
             }
+            else {
+                type_message = "Здесь пусто.";
+            }
         } else {
             // English language
             if (type_message.contains("start")) {
@@ -60,14 +63,14 @@ public final class MessageLanguage {
                         "&f\n" +
                         "&f&l✽ &aHappy New Year &f&l✽\n" +
                         "&f\n" +
-                        "&7The plugin has been enabled (v1.1.3)";
+                        "&7The plugin has been enabled.";
             } else if (type_message.contains("stop")) {
                 type_message = "\n" +
                         "&f&l✽ &r&fDeveloper: &ahttps://vk.com/jdevs &f&l✽\n" +
                         "\n" +
                         "&f&l✽ &aHappy New Year &f&l✽\n" +
                         "\n" +
-                        "&7The plugin has been disabled (v1.1.3)";
+                        "&7The plugin has been disabled (v1.2.0)";
             } else if (type_message.contains("help")) {
                 type_message = "&aHelp:\n" +
                         "\n" +
@@ -94,10 +97,13 @@ public final class MessageLanguage {
                     type_message = type_message + obj;
                 }
             }
+            else {
+                type_message = "Null";
+            }
         }
         // Defining the type of language message
         if (p != null) {
-            plugin.getMessages().sendMessage(p, type_message);
+            plugin.getMessages().sendMessage(p, type_message, null);
         } else {
             plugin.getMessages().sendLogger(type_message);
         }

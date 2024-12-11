@@ -1,10 +1,9 @@
 package dev.jdevs.JGifts;
 
-import com.tchristofferson.configupdater.ConfigUpdater;
+import dev.jdevs.JGifts.updater.Updater;
 import dev.jdevs.JGifts.command.Gift;
 import dev.jdevs.JGifts.loots.Load;
 import dev.jdevs.JGifts.made.MessageLanguage;
-import dev.jdevs.JGifts.supports.PlaceholderAPI;
 import dev.jdevs.JGifts.supports.WG;
 import dev.jdevs.JGifts.utils.Message;
 import dev.jdevs.JGifts.utils.Values;
@@ -28,13 +27,14 @@ public final class Christmas extends JavaPlugin implements Listener {
    private YamlConfiguration launch = of("launch.yml");
    private YamlConfiguration nicknames;
    private YamlConfiguration loot;
+   private Updater updater;
    private Values values;
    private Message messages;
    private WG wg;
    private Load load;
    private MessageLanguage sends;
    String version_launch = "1.1.0";
-   String version_config = "1.0.1";
+   String version_config = "1.1.0";
    @Override
    public void onEnable() {
       getCommand("christmas").setExecutor(new Gift(this));
@@ -47,6 +47,7 @@ public final class Christmas extends JavaPlugin implements Listener {
       if (!start.exists()) {
          saveResource("launch.yml", true);
       }
+      updater = new Updater(this);
       createStart(start);
       //
       // We get the language
@@ -58,6 +59,7 @@ public final class Christmas extends JavaPlugin implements Listener {
       }
       //
       checkVersion();
+      //
       createConfigurations();
       YamlConfiguration loot = of("storage/loot.yml");
       YamlConfiguration nicknames = of("storage/db.yml");
@@ -79,45 +81,39 @@ public final class Christmas extends JavaPlugin implements Listener {
       }
       if (!values.getGifts().isEmpty()) {
          if (values.isTakedLoot() || values.isOnCrashes()) {
-            for (Location loc : values.getGifts().keySet()) {
-               if (values.isTakedLoot()) {
+            boolean takedLoot = values.isTakedLoot();
+            for (Location loc : new HashSet<>(values.getGifts().keySet())) {
+               if (takedLoot) {
                   getLoad().dropLoot(loc);
                }
-               values.getFallGifts().removeGifts(loc);
+               removeGifts(loc);
             }
          }
-         values.getGifts().clear();
       }
       if (values.getHologramType() != null) {
          if (values.getHologramType().contains("decentholograms") && !values.getDecentHolograms().isEmpty()) {
-            for (Hologram hd : values.getDecentHolograms().values()) {
+            for (Hologram hd : new HashSet<>(values.getDecentHolograms().values())) {
                hd.delete();
             }
-            values.getDecentHolograms().clear();
          } else if (!values.getHolographicDisplays().isEmpty()) {
-            for (me.filoghost.holographicdisplays.api.hologram.Hologram hd : values.getHolographicDisplays().values()) {
+            for (me.filoghost.holographicdisplays.api.hologram.Hologram hd : new HashSet<>(values.getHolographicDisplays().values())) {
                hd.delete();
             }
-            values.getHolographicDisplays().clear();
          }
       }
       if (version_mode > 12) {
          if (!values.getSaveBlock().isEmpty()) {
-            for (Location loc : values.getSaveBlock().keySet()) {
+            for (Location loc : new HashSet<>(values.getSaveBlock().keySet())) {
                if (values.getSaveBlock().get(loc) != null) {
                   wg.setBlock(loc, loc.getBlock());
                }
             }
-            values.getSaveBlock().clear();
          }
       } else {
          if (!values.getSaveBlock_12().isEmpty()) {
-            for (Location loc : values.getSaveBlock_12().keySet()) {
-               if (values.getSaveBlock_12().get(loc) != null) {
-                  wg.setBlock(loc, loc.getBlock());
-               }
+            for (Location loc : new HashSet<>(values.getSaveBlock_12().keySet())) {
+               wg.setBlock(loc, loc.getBlock());
             }
-            values.getSaveBlock_12().clear();
          }
       }
       if (values.getPlaceholderAPI() != null) {
@@ -167,9 +163,9 @@ public final class Christmas extends JavaPlugin implements Listener {
       YamlConfiguration yml = YamlConfiguration.loadConfiguration(cfg);
       if (yml.getString("version") == null || !yml.getString("version").contains(version_config)) {
          try {
-            ConfigUpdater.update(this, language + "/config.yml", cfg);
             yml.set("version", version_config);
             yml.save(cfg);
+            updater.update(language + "/config.yml", cfg);
             Bukkit.getLogger().info("[UPDATE] config.yml has been successfully updated to version " + version_config);
          } catch (IOException e) {
             Bukkit.getLogger().warning("!!!Configuration update failed!!!\n Type: config.yml");
@@ -191,7 +187,7 @@ public final class Christmas extends JavaPlugin implements Listener {
          try {
             launch.set("version", version_launch);
             launch.save(fl);
-            ConfigUpdater.update(this, "launch.yml", fl);
+            updater.update("launch.yml", fl);
             launch = YamlConfiguration.loadConfiguration(fl);
             Bukkit.getLogger().info("[UPDATE] launch.yml has been successfully updated to version " + version_launch);
          } catch (IOException e) {
@@ -230,5 +226,22 @@ public final class Christmas extends JavaPlugin implements Listener {
          }
       }
       language = launch.getString("language").toLowerCase();
+   }
+   public void updateLoot() {
+      this.loot = of("storage/loot.yml");
+   }
+   public void removeGifts(Location b_loc) {
+      if (values.isOnCrashes()) {
+         if (nicknames.getStringList("gifts") != null) {
+            List<String> gifts2 = new ArrayList<>(nicknames.getStringList("gifts"));
+            gifts2.remove(b_loc.getWorld().getName() + ":" + b_loc.getX() + ":" + b_loc.getY() + ":" + b_loc.getZ());
+            nicknames.set("gifts", gifts2);
+            try {
+               nicknames.save(new File(getDataFolder(), "storage/db.yml"));
+            } catch (IOException e) {
+               e.printStackTrace();
+            }
+         }
+      }
    }
 }

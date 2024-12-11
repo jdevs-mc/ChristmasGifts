@@ -23,6 +23,7 @@ public final class Load {
         if (!plugin.getValues().isLoots()) {
             return;
         }
+        plugin.updateLoot();
         YamlConfiguration loot = plugin.getLoot();
         if (loot.get("loot") == null | !loot.contains("loot")) {
             loot.createSection("loot");

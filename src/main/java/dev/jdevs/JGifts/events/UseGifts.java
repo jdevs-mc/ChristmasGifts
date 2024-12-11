@@ -23,7 +23,7 @@ public final class UseGifts implements Listener {
             if (!values.getGifts().containsKey(block)) {
                 return;
             }
-            if (!values.getGifts().get(block).equals(p)) {
+            if (!values.getGifts().get(block).equals(p.getUniqueId())) {
                 return;
             }
             String hologramType = values.getHologramType();
@@ -37,13 +37,13 @@ public final class UseGifts implements Listener {
                     values.getHolographicDisplays().remove(block);
                 }
             }
-            values.getGifts().remove(block);
             // Drop loot
             plugin.getLoad().dropLoot(block);
             //
             for (String msg : values.getSuccess()) {
-                plugin.getMessages().sendMessage(event.getPlayer(), msg);
+                plugin.getMessages().sendMessage(event.getPlayer(), msg, block);
             }
+            values.getGifts().remove(block);
             org.bukkit.block.Block b = block.getBlock();
             plugin.getWg().setBlock(block, b);
         }

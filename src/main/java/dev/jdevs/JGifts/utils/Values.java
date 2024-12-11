@@ -12,7 +12,6 @@ import org.bukkit.Server;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -30,7 +29,7 @@ public class Values {
     private List<String> success;
     private List<String> limit_message;
     private List<String> no_perm;
-    private final Map<Location, Player> gifts = new HashMap<>();
+    private final Map<Location, UUID> gifts = new HashMap<>();
     private final Map<Location, BlockData> saveBlock = new HashMap<>();
     private final Map<Location, Map.Entry<Material, Byte>> saveBlock_12 = new HashMap<>();
     private final Map<Location, Hologram> decentHolograms = new HashMap<>();

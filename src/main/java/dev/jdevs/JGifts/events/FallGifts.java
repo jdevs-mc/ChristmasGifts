@@ -41,19 +41,25 @@ public final class FallGifts implements Listener {
         values = plugin.getValues();
         key = values.getKey();
     }
-    private void sendMessage(Player sender, String text) {
-        plugin.getMessages().sendMessage(sender, text);
+    private void sendMessage(Player sender, String text, Location loc) {
+        plugin.getMessages().sendMessage(sender, text, loc);
     }
     @EventHandler
     void FallBlock(EntityChangeBlockEvent event) {
         Entity ent = event.getEntity();
         if (ent instanceof FallingBlock) {
-            if (!ent.hasMetadata(key)) {
+            if (!ent.hasMetadata(key) && !ent.hasMetadata(key + "_force")) {
                 return;
             }
             event.setCancelled(true);
             ((FallingBlock) ent).setDropItem(false);
-            Player p = Bukkit.getPlayer(String.valueOf(ent.getMetadata(key).get(0).value()));
+            Player p;
+            if (ent.hasMetadata(key)) {
+                p = Bukkit.getPlayer(String.valueOf(ent.getMetadata(key).get(0).value()));
+            }
+            else {
+                p = Bukkit.getPlayer(String.valueOf(ent.getMetadata(key + "_force").get(0).value()));
+            }
             Block b = ent.getLocation().getBlock();
             Location b_loc = b.getLocation();
             // Checking the WorldGuard
@@ -94,13 +100,19 @@ public final class FallGifts implements Listener {
                 }
             }
             // We save the previous data of the block and replace it with our gift
+            if (!plugin.getValues().getSpawnGifts().checkLimitGifts(p)) {
+                if (!ent.hasMetadata(key + "_force")) {
+                    return;
+                }
+            }
             if (values.isFirework()) {
                 spawnFirework(b_loc);
             }
             // Add limit gift
             if (values.isLimit()) {
                 YamlConfiguration nicknames = plugin.getNicknames();
-                nicknames.set("players." + p.getName(), nicknames.getInt("players." + p.getName()) + 1);
+                String key = "players." + p.getName();
+                nicknames.set(key, nicknames.getInt(key) + 1);
                 if (values.isOnCrashes()) {
                     try {
                         nicknames.save(new File(plugin.getDataFolder(), "storage/db.yml"));
@@ -109,14 +121,16 @@ public final class FallGifts implements Listener {
                     }
                 }
             }
+            values.getGifts().put(b_loc, p.getUniqueId());
             for (String lore : values.getStart_gift()) {
-                sendMessage(p, lore);
+                sendMessage(p, lore, b_loc);
             }
             int version_mode = plugin.getVersion_mode();
             UUID uuid = p.getUniqueId();
             values.getTime().remove(uuid);
             if (values.isAutoGive()) {
                 plugin.getLoad().dropLoot(b_loc);
+                values.getGifts().remove(b_loc);
                 return;
             }
             if (values.isOnCrashes()) {
@@ -171,7 +185,6 @@ public final class FallGifts implements Listener {
             }
             skin.update();
             // We save our gift and notify you about the spawn with the help of fireworks
-            values.getGifts().put(b_loc, p);
             ((FallingBlock) ent).setDropItem(false);
             String hologramType = values.getHologramType();
             // Creating a hologram
@@ -214,8 +227,12 @@ public final class FallGifts implements Listener {
                 @Override
                 public void run() {
                     if (values.getGifts().containsKey(b_loc)) {
-                        if (!values.isTakedLoot()) {
+                        if (values.isTakedLoot()) {
                             plugin.getLoad().dropLoot(b_loc);
+                        }
+                        else {
+                            YamlConfiguration nicknames = plugin.getNicknames();
+                            nicknames.set("players." + p.getName(), nicknames.getInt("players." + p.getName()) - 1);
                         }
                         plugin.getWg().setBlock(b_loc, b);
                         values.getGifts().remove(b_loc);
@@ -229,9 +246,9 @@ public final class FallGifts implements Listener {
                                 values.getHolographicDisplays().remove(b_loc);
                             }
                         }
-                        removeGifts(b_loc);
+                        plugin.removeGifts(b_loc);
                         for (String lore : values.getStop_gift()) {
-                            sendMessage(p, lore);
+                            sendMessage(p, lore, b_loc);
                         }
                         cancel();
                     } else {
@@ -256,20 +273,5 @@ public final class FallGifts implements Listener {
         fireworkMeta.addEffect(effect);
         fireworkMeta.setPower(0);
         firework.setFireworkMeta(fireworkMeta);
-    }
-    public void removeGifts(Location b_loc) {
-        if (values.isOnCrashes()) {
-            YamlConfiguration nicknames = plugin.getNicknames();
-            if (nicknames.getStringList("gifts") != null) {
-                List<String> gifts2 = new ArrayList<>(nicknames.getStringList("gifts"));
-                gifts2.remove(b_loc.getWorld().getName() + ":" + b_loc.getX() + ":" + b_loc.getY() + ":" + b_loc.getZ());
-                nicknames.set("gifts", gifts2);
-                try {
-                    nicknames.save(new File(plugin.getDataFolder(), "storage/db.yml"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 }

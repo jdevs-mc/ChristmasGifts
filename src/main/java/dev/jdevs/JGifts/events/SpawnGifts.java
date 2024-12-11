@@ -131,9 +131,9 @@ public final class SpawnGifts implements Listener {
             }
         }
         // Spawn a gifts
-        fallBlockSpawn(p, searchLocation(p, 3, loc.getYaw()));
+        fallBlockSpawn(p, searchLocation(p, 3, loc.getYaw()), "");
     }
-    public void fallBlockSpawn(Player p, Location loc) {
+    public void fallBlockSpawn(Player p, Location loc, String force) {
         // Continue...
         Material mt;
         String type = values.getType();
@@ -178,7 +178,7 @@ public final class SpawnGifts implements Listener {
             fallingBlock = p.getWorld().spawnFallingBlock(loc, mt.createBlockData());
         }
         if (fallingBlock != null) {
-            fallingBlock.setMetadata(values.getKey(), new FixedMetadataValue(plugin, String.valueOf(p.getName())));
+            fallingBlock.setMetadata(values.getKey() + force, new FixedMetadataValue(plugin, String.valueOf(p.getName())));
             fallingBlock.setDropItem(false);
             if (version_mode >= 8) {
                 fallingBlock.setHurtEntities(false);

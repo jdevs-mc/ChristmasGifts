@@ -21,12 +21,12 @@ public final class PlaceholderAPI extends PlaceholderExpansion {
         if (args.length >= 1) {
             if (args[0].contains("active")) {
                 if (args.length != 2) {
-                    if (values.getGifts().containsValue(p)) {
+                    if (values.getGifts().containsValue(p.getUniqueId())) {
                         return "true";
                     }
                 } else {
-                    Player uuid = Bukkit.getPlayer(args[1]);
-                    if (values.getGifts().containsValue(uuid)) {
+                    Player p1 = Bukkit.getPlayer(args[1]);
+                    if (values.getGifts().containsValue(p1.getUniqueId())) {
                         return "true";
                     }
                 }
@@ -52,7 +52,6 @@ public final class PlaceholderAPI extends PlaceholderExpansion {
     public @NotNull String getIdentifier() {
         return "ChristmasGifts";
     }
-
     @Override
     public @NotNull String getAuthor() {
         return "JDevs";
