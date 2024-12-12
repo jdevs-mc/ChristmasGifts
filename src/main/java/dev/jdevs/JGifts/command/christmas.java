@@ -35,7 +35,7 @@ public class christmas implements CommandExecutor {
     public FileConfiguration getConfig() {
         return Christmas.getInstance().getConfig();
     }
-    List<String> no_perm = getConfig().getStringList("actions.no_perm");
+    private final List<String> no_perm = getConfig().getStringList("actions.no_perm");
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("christmas")) {

@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 public class Values {
-    Christmas plugin;
+    private final Christmas plugin;
     private String hologramType;
     private List<String> hdstring;
     private List<String> start_gift;

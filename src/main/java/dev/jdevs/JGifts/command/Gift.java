@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 
 public final class Gift implements CommandExecutor {
-    Christmas plugin;
+    private final Christmas plugin;
     public Gift(Christmas plugin) {
         this.plugin = plugin;
     }

@@ -8,7 +8,7 @@ import java.io.File;
 
 public class ConfigManager {
     private static JavaPlugin instance;
-    YamlConfiguration yamlConfiguration;
+    private final YamlConfiguration yamlConfiguration;
 
     public static void setup(JavaPlugin instance) {
         ConfigManager.instance = instance;

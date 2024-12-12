@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Getter
 public final class Load {
     private final List<Loot> items = new ArrayList<>();
-    Christmas plugin;
+    private final Christmas plugin;
     public Load(Christmas plugin) {
         this.plugin = plugin;
     }

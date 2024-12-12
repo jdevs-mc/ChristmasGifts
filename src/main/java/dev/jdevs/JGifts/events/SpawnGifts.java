@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class SpawnGifts implements Listener {
-    Christmas plugin;
+    private final Christmas plugin;
     private final Values values;
     public SpawnGifts(Christmas plugin) {
         this.plugin = plugin;

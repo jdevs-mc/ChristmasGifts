@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExplodeEvent;
 
 public final class AntiGriefV8 implements Listener {
-    Christmas plugin;
+    private final Christmas plugin;
     public AntiGriefV8(Christmas plugin) {
         this.plugin = plugin;
     }

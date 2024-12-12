@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 public final class AntiGrief implements Listener {
-    Christmas plugin;
+    private final Christmas plugin;
     private final int version_mode;
     private final Values values;
     public AntiGrief(Christmas plugin) {

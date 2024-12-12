@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 public final class WG {
-    Christmas plugin;
+    private final Christmas plugin;
     private final Values values;
     public WG(Christmas plugin) {
         this.plugin = plugin;
