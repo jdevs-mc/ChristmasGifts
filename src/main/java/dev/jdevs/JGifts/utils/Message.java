@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 public final class Message {
     private final Christmas plugin;
+    //By Super89
     private final int version_mode;
     private final boolean isPlaceholderAPI;
     public Message(Christmas plugin) {
