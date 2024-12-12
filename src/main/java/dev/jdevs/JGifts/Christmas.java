@@ -11,7 +11,6 @@ import eu.decentsoftware.holograms.api.holograms.Hologram;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -20,7 +19,7 @@ import java.nio.file.Files;
 import java.util.*;
 
 @Getter
-public final class Christmas extends JavaPlugin implements Listener {
+public final class Christmas extends JavaPlugin {
    private boolean disabled = false;
    public static String language;
    private int version_mode = 13;
@@ -33,7 +32,7 @@ public final class Christmas extends JavaPlugin implements Listener {
    private WG wg;
    private Load load;
    private MessageLanguage sends;
-   String version_launch = "1.1.0";
+   String version_launch = "1.1.1";
    String version_config = "1.1.0";
    @Override
    public void onEnable() {
