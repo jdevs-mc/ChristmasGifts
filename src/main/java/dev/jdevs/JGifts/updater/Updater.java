@@ -18,7 +18,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class Updater {
-    Christmas plugin;
+    private final Christmas plugin;
     public Updater(Christmas plugin) {
         this.plugin = plugin;
     }

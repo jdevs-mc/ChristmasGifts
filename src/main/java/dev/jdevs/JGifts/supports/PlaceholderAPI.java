@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public final class PlaceholderAPI extends PlaceholderExpansion {
-    Christmas plugin;
-    Values values;
+    private final Christmas plugin;
+    private final Values values;
     public PlaceholderAPI(Christmas plugin) {
         this.plugin = plugin;
         values = plugin.getValues();

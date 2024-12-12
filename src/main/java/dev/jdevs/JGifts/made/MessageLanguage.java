@@ -4,7 +4,7 @@ import dev.jdevs.JGifts.Christmas;
 import org.bukkit.entity.Player;
 
 public final class MessageLanguage {
-    Christmas plugin;
+    private final Christmas plugin;
     private final boolean debug;
     public MessageLanguage(Christmas plugin) {
         this.plugin = plugin;

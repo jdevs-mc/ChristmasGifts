@@ -32,8 +32,8 @@ public final class Christmas extends JavaPlugin {
    private WG wg;
    private Load load;
    private MessageLanguage sends;
-   String version_launch = "1.1.1";
-   String version_config = "1.1.0";
+   private final String version_launch = "1.1.1";
+   private final String version_config = "1.1.0";
    @Override
    public void onEnable() {
       getCommand("christmas").setExecutor(new Gift(this));

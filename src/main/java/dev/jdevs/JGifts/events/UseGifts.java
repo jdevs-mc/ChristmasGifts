@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public final class UseGifts implements Listener {
-    Christmas plugin;
+    private final Christmas plugin;
     private final Values values;
     public UseGifts(Christmas plugin) {
         this.plugin = plugin;

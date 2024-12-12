@@ -33,8 +33,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public final class FallGifts implements Listener {
-    Christmas plugin;
-    String key;
+    private final Christmas plugin;
+    private final String key;
     private final Values values;
     public FallGifts(Christmas plugin) {
         this.plugin = plugin;

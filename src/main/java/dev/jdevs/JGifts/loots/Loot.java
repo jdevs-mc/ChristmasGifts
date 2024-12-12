@@ -8,7 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 public class Loot {
-    Christmas plugin;
+    private final Christmas plugin;
     private final String gift;
     private final String id;
     private final ItemStack item;
