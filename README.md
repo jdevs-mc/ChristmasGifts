@@ -36,7 +36,7 @@ Get a list of commands using /gifts help
 - /gifts add Player - Spawn a gift near the player
 - /gifts put NamePlayer Amount - Set your gift limit for the player
 - /gifts check NamePlayer - Check the gift limit for players
-- /gifts newloot santa/grinch Name Amount(from-to) Chance - Add an item to gifts
+- /gifts loot - Get help about subcommand loot.
 ### 🚀Launch:
 - Functions for saving limits and gifts when crashing on your server.
 - Auto-issue a gift to make the issue faster.
