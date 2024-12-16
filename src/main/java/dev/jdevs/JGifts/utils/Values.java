@@ -185,7 +185,7 @@ public class Values {
         no_perm = config.getStringList("actions.no_perm");
     }
     PlaceholderAPI placeholderAPI = null;
-    private void connectPlaceholderAPI() {
+    public void connectPlaceholderAPI() {
         new BukkitRunnable() {
             @Override
             public void run() {

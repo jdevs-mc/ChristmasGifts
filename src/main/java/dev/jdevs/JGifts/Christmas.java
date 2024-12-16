@@ -52,6 +52,8 @@ public final class Christmas extends JavaPlugin {
       // We get the language
       if (launch.getString("language") == null || !languages.contains(launch.getString("language").toLowerCase())) {
          disabled = true;
+         version_mode = 8;
+         messages = new Message(this);
          Bukkit.getLogger().warning("\nFinish configuring of the plugin ChristmasGifts before launching it in launch.yml" +
                  "\nЗавершите настройку плагина ChristmasGifts перед его запуском в файле launch.yml\n");
          return;
@@ -89,15 +91,14 @@ public final class Christmas extends JavaPlugin {
             }
          }
       }
-      if (values.getHologramType() != null) {
-         if (values.getHologramType().contains("decentholograms") && !values.getDecentHolograms().isEmpty()) {
-            for (Hologram hd : new HashSet<>(values.getDecentHolograms().values())) {
-               hd.delete();
-            }
-         } else if (!values.getHolographicDisplays().isEmpty()) {
-            for (me.filoghost.holographicdisplays.api.hologram.Hologram hd : new HashSet<>(values.getHolographicDisplays().values())) {
-               hd.delete();
-            }
+      if (!values.getDecentHolograms().isEmpty()) {
+         for (Hologram hd : new HashSet<>(values.getDecentHolograms().values())) {
+            hd.delete();
+         }
+      }
+      if (!values.getHolographicDisplays().isEmpty()) {
+         for (me.filoghost.holographicdisplays.api.hologram.Hologram hd : new HashSet<>(values.getHolographicDisplays().values())) {
+            hd.delete();
          }
       }
       if (version_mode > 12) {

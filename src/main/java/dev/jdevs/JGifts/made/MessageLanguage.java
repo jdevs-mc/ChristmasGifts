@@ -34,7 +34,14 @@ public final class MessageLanguage {
                         "&a/gifts add Игрок - &fЗаспавнить возле игрока подарок\n" +
                         "&a/gifts put ИмяИгрока Количество - &fПоставить свой лимит подарков для игрока\n" +
                         "&a/gifts check ИмяИгрока - &fПроверьте лимит подарков для игроков\n" +
-                        "&a/gifts newloot santa/grinch Название Количество(от-до) Шанс - &fДобавить предмет в подарки\n";
+                        "&a/gifts loot - &fПолучить помощь о подкоманде loot";
+            } else if (type_message.contains("loot")) {
+                type_message = "&aПомощь для подкоманды loot:\n" +
+                        "\n" +
+                        "&a/gifts loot add santa/grinch Название Количество(от-до) Шанс - &fДобавьте предмет в подарки\n" +
+                        "&a/gifts loot list santa/grinch - &fПолучите названия предметов у подарков\n" +
+                        "&a/gifts loot get santa/grinch Название - &fПолучите характеристику (ItemStack) предмета\n" +
+                        "&a/gifts loot remove santa/grinch Название - &fУдалить предмет из подарков";
             } else if (type_message.contains("successfully")) {
                 type_message = "&aУспешно. ";
                 if (obj != null && obj.contains("restart")) {
@@ -78,7 +85,14 @@ public final class MessageLanguage {
                         "&a/gifts add Player - &fPlace a gift near the player\n" +
                         "&a/gifts put PlayerName Amount - &fSet your gift limit for the player\n" +
                         "&a/gifts check PlayerName - &fCheck player gift limit\n" +
-                        "&a/gifts newloot santa/grinch Name Amount(from-to) Chance - &fAdd an item to gifts\n";
+                        "&a/gifts loot - &fGet help about the loot subcommand";
+            } else if (type_message.contains("loot")) {
+                type_message = "&aHelp from the loot subcommand:\n" +
+                        "\n" +
+                        "&a/gifts loot add santa/grinch Name Amount(from-to) Chance - &fAdd an item to gifts\n" +
+                        "&a/gifts loot list santa/grinch - &fGet a list of items\n" +
+                        "&a/gifts loot get santa/grinch Name - &fGet the item's ItemStack\n" +
+                        "&a/gifts loot remove santa/grinch Name - &fRemove an item from gifts";
             } else if (type_message.contains("successfully")) {
                 type_message = "&aSuccessfully. ";
                 if (obj != null && obj.contains("restart")) {

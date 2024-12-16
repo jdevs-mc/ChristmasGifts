@@ -26,13 +26,12 @@ public final class UseGifts implements Listener {
             if (!values.getGifts().get(block).equals(p.getUniqueId())) {
                 return;
             }
-            String hologramType = values.getHologramType();
-            if (hologramType != null && !hologramType.contains("null")) {
-                if (hologramType.contains("decentholograms")) {
+            if (!values.getDecentHolograms().isEmpty() || !values.getHolographicDisplays().isEmpty()) {
+                if (values.getDecentHolograms().get(block) != null) {
                     values.getDecentHolograms().get(block).delete();
                     values.getDecentHolograms().remove(block);
                 }
-                else {
+                else if (values.getHolographicDisplays().get(block) != null) {
                     values.getHolographicDisplays().get(block).delete();
                     values.getHolographicDisplays().remove(block);
                 }

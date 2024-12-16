@@ -3,10 +3,12 @@ package dev.jdevs.JGifts.utils;
 import dev.jdevs.JGifts.Christmas;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.*;
+import org.bukkit.Color;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +20,12 @@ public final class Message {
     public Message(Christmas plugin) {
         this.plugin = plugin;
         version_mode = plugin.getVersion_mode();
-        isPlaceholderAPI = plugin.getValues().isPlaceholderAPI();
+        if (!plugin.isDisabled()) {
+            isPlaceholderAPI = plugin.getValues().isPlaceholderAPI();
+        }
+        else {
+            isPlaceholderAPI = false;
+        }
     }
     public String hex(String message) {
         if (version_mode >= 16) {
@@ -41,8 +48,7 @@ public final class Message {
             return;
         }
         String formatted = text.
-                replace("%player%", p.getName()).
-                replace("%p", p.getName());
+                replace("%player%", p.getName());
         if (formatted.contains("%rnd_player%")) {
             List<Player> playersList = new ArrayList<>(Bukkit.getOnlinePlayers());
             String name = playersList.get(ThreadLocalRandom.current().nextInt(playersList.size())).getName();
@@ -53,7 +59,8 @@ public final class Message {
             formatted = PlaceholderAPI.setPlaceholders(p, formatted);
         }
         if (!lowerCase.startsWith("[") || lowerCase.startsWith("[message] ")) {
-            p.sendMessage(hex(formatted.replace("[message] ", "")));
+            text = hex(formatted.replace("[message] ", ""));
+            p.sendMessage(text);
         }
         else if (lowerCase.startsWith("[player] ")) {
             p.performCommand(hex(formatted.replace("[player] ", "")));
@@ -112,8 +119,12 @@ public final class Message {
             if (version_mode >= 13) {
                 Particle.DustOptions dust = new Particle.DustOptions(Color.fromRGB(r, g, b), 1);
                 loc.getWorld().spawnParticle(Particle.REDSTONE, loc.getX(), loc.getY(), loc.getZ(), amount, 0, 0, 0, dust);
-            } else {
-                loc.getWorld().spawnParticle(Particle.REDSTONE, loc.getX(), loc.getY(), loc.getZ(), amount, r, g, b, 1);
+            }
+            else if (version_mode >= 9) {
+                loc.getWorld().spawnParticle(Particle.REDSTONE, loc.getX(), loc.getY(), loc.getZ(), 0, (double) (r + 1) / 255, (double) (g + 1) / 255, (double) (b + 1) / 255, 1);
+            }
+            else {
+                sendLogger("&c[ChristmasGifts] Supports particles starting &lonly&r&c from version &l1.9.1+");
             }
         } else {
             loc.add(0.5, 0.1, 0.5);
@@ -124,8 +135,11 @@ public final class Message {
                     Particle.DustOptions dust = new Particle.DustOptions(Color.fromRGB(r, g, b), 1);
                     loc.getWorld().spawnParticle(Particle.REDSTONE, x, loc.getY(), z, amount, 0, 0, 0, dust);
                 }
+                else if (version_mode >= 9) {
+                    loc.getWorld().spawnParticle(Particle.REDSTONE, x, loc.getY(), z, 0, (double) (r + 1) / 255, (double) (g + 1) / 255, (double) (b + 1) / 255, 1);
+                }
                 else {
-                    loc.getWorld().spawnParticle(Particle.REDSTONE, x, loc.getY(), z, amount, r, g, b, 1);
+                    sendLogger("&c[ChristmasGifts] Supports particles starting &lonly&r&c from version &l1.9.1+");
                 }
             }
         }

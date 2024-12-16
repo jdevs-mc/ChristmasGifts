@@ -21,7 +21,7 @@ public final class PlaceholderAPI extends PlaceholderExpansion {
         String[] args = ind.split("_");
         if (args.length >= 1) {
             String tru = PlaceholderAPIPlugin.booleanTrue();
-            String fals = PlaceholderAPIPlugin.booleanTrue();
+            String fals = PlaceholderAPIPlugin.booleanFalse();
             if (args[0].contains("active")) {
                 if (args.length != 2) {
                     if (values.getGifts().containsValue(p.getUniqueId())) {
@@ -62,6 +62,6 @@ public final class PlaceholderAPI extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "1.0.0";
+        return "1.0.1";
     }
 }
