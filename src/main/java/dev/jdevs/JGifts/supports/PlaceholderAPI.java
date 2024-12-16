@@ -64,4 +64,5 @@ public final class PlaceholderAPI extends PlaceholderExpansion {
     public @NotNull String getVersion() {
         return "1.0.1";
     }
+    // During compilation, an unexpected guest appears here.
 }
