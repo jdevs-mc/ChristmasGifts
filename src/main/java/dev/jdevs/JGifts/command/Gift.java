@@ -35,6 +35,7 @@ public final class Gift implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        // 
         if (command.getName().equalsIgnoreCase("christmas")) {
             Values values = plugin.getValues();
             if (plugin.isDisabled()) {
@@ -322,4 +323,5 @@ public final class Gift implements CommandExecutor {
         }
         return false;
     }
+    // Previously, this command was duplicated on GitHub, but not in the plugin.
 }
