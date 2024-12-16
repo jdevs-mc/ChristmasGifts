@@ -48,6 +48,11 @@ Get a list of commands using /gifts help
 - Chance adjustment.
 - The lock is spawned in the world, the biome.
 - The lock is spawned with fly and shift.
+### ✨Particles:
+- Add particles to the gift at any interaction with it through the configuration (RGB, supported only from 1.9.1+)
+
+![image](https://github.com/user-attachments/assets/e26cef7e-70ed-4c11-9aaf-03168326c662)
+
 ### ⚙️Config:
 - Send actions to players using messages. (HEX support from 1.16+)
 - Settings for gifts, loot, holograms
