@@ -1,5 +1,5 @@
 ###################################################################
-# JDevs                     v1.2.0                      Christmas #
+# JDevs                     v1.2.1                      Christmas #
 # Christmas                                                 JDevs #
 ###################################################################
 
@@ -19,6 +19,8 @@ BaseSettings:
 
   onCrashes:
     # If your server crashes frequently, then enable this feature
+    # !!! If your server does NOT crash, DO NOT ENABLE THIS OPTION.
+    # !!! This feature has a very bad effect on the plugin's performance.
     enabled: false
   supports:
     # Select the plugin used for the hologram above the gift.
@@ -28,7 +30,7 @@ BaseSettings:
     # Put "DecentHolograms" if you use this plugin on holograms
 
     # WorldGuard & WorldEdit support
-    WorldGuard: true
+    WorldGuard: false
 
     # PlaceholderAPI support
     # The following placeholders are available:
@@ -39,7 +41,7 @@ BaseSettings:
     # Output:
     # true - The player has reached the limit/The gift is active
     # false - The player has not reached the limit/The gift is not active
-    PlaceholderAPI: true
+    PlaceholderAPI: false
   spawn:
     # Mode
     mode:
@@ -52,17 +54,18 @@ BaseSettings:
 
       1:
         # A full chance for a gift
-        FullChance: 1000000
+        FullChance: 100000
 
         # A chance gift
         Chance: 10
 
         # Checks the chances when the player moves every defined time.
-        Every: 60
+        Every: 100
         # Measured in ticks, 20 ticks is 1 second.
         # Set the ticks value higher if the plugin starts causing lags.
       2:
         # How many people will try their luck for Mode 2 (null - disabled for 1 mode, -1 - all players)
+        # If you put a number, then put it without "" or "
         people: "null"
         # In seconds
         every: 3600

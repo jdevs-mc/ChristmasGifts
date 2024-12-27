@@ -33,7 +33,10 @@ public class Values {
     private final Map<Location, BlockData> saveBlock = new HashMap<>();
     private final Map<Location, Map.Entry<Material, Byte>> saveBlock_12 = new HashMap<>();
     private final Map<Location, Hologram> decentHolograms = new HashMap<>();
+    // Ignore warnings
+    @SuppressWarnings("all")
     private final Map<Location, me.filoghost.holographicdisplays.api.hologram.Hologram> holographicDisplays = new HashMap<>();
+    //
     private final List<UUID> time = new ArrayList<>();
     private int all_procent;
     private int procent;
@@ -103,7 +106,7 @@ public class Values {
             if (!mode.getString("2.people").contains("null")) {
                 spawnGifts.EveryTime(mode.getInt("2.people"), mode.getInt("2.every"));
             } else {
-                Bukkit.getLogger().warning("How many people will receive gifts once in how many is not specified, the mode 2 is disabled.");
+                Bukkit.getLogger().warning("How many people is null, the mode 2 is disabled.");
             }
         }
         fallGifts = new FallGifts(plugin);
@@ -119,6 +122,9 @@ public class Values {
                     String[] split = locs.split(":");
                     Location loc = new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]));
                     plugin.getLoad().dropLoot(loc);
+                    String name = split[4];
+                    nicknames.set("players." + name, nicknames.getInt("players." + name) - 1);
+                    loc.getBlock().setType(Material.AIR);
                     gifts2.remove(locs);
                 }
                 nicknames.set("gifts", gifts2);

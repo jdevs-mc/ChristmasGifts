@@ -20,8 +20,8 @@ import java.util.*;
 
 @Getter
 public final class Christmas extends JavaPlugin {
-   private boolean disabled = false;
-   public static String language;
+   private boolean disabled = true;
+   private String language;
    private int version_mode = 13;
    private YamlConfiguration launch = of("launch.yml");
    private YamlConfiguration nicknames;
@@ -34,9 +34,11 @@ public final class Christmas extends JavaPlugin {
    private MessageLanguage sends;
    private final String version_launch = "1.1.1";
    private final String version_config = "1.1.0";
+   private Gift cmd;
    @Override
    public void onEnable() {
-      getCommand("christmas").setExecutor(new Gift(this));
+      cmd = new Gift(this);
+      getCommand("christmas").setExecutor(cmd);
       List<String> languages = Arrays.asList(
               "ru",
               "en"
@@ -51,7 +53,6 @@ public final class Christmas extends JavaPlugin {
       //
       // We get the language
       if (launch.getString("language") == null || !languages.contains(launch.getString("language").toLowerCase())) {
-         disabled = true;
          version_mode = 8;
          messages = new Message(this);
          Bukkit.getLogger().warning("\nFinish configuring of the plugin ChristmasGifts before launching it in launch.yml" +
@@ -60,18 +61,20 @@ public final class Christmas extends JavaPlugin {
       }
       //
       checkVersion();
+      disabled = false;
       //
       createConfigurations();
       YamlConfiguration loot = of("storage/loot.yml");
       YamlConfiguration nicknames = of("storage/db.yml");
       this.loot = loot;
       this.nicknames = nicknames;
-      load = new Load(this);
       values = new Values(this);
-      values.setupValues(true);
-      sends = new MessageLanguage(this);
-      messages = new Message(this);
       wg = new WG(this);
+      messages = new Message(this);
+      sends = new MessageLanguage(this);
+      load = new Load(this);
+      values.setupValues(true);
+      cmd.register(disabled);
       sends.send("start", null, null);
    }
 
@@ -81,49 +84,26 @@ public final class Christmas extends JavaPlugin {
          return;
       }
       if (!values.getGifts().isEmpty()) {
-         if (values.isTakedLoot() || values.isOnCrashes()) {
+         final Map<Location, UUID> gifts = new HashMap<>(values.getGifts());
+         for (Location loc : gifts.keySet()) {
             boolean takedLoot = values.isTakedLoot();
-            for (Location loc : new HashSet<>(values.getGifts().keySet())) {
-               if (takedLoot) {
-                  getLoad().dropLoot(loc);
-               }
-               removeGifts(loc);
+            String name = Bukkit.getPlayer(gifts.get(loc)).getName();
+            if (takedLoot || values.isOnCrashes()) {
+               removeGifts(loc, name);
+            }
+            if (takedLoot) {
+               getLoad().dropLoot(loc);
+            } else {
+               nicknames.set("players." + name, nicknames.getInt("players." + name) - 1);
             }
          }
       }
-      if (!values.getDecentHolograms().isEmpty()) {
-         for (Hologram hd : new HashSet<>(values.getDecentHolograms().values())) {
-            hd.delete();
-         }
-      }
-      if (!values.getHolographicDisplays().isEmpty()) {
-         for (me.filoghost.holographicdisplays.api.hologram.Hologram hd : new HashSet<>(values.getHolographicDisplays().values())) {
-            hd.delete();
-         }
-      }
-      if (version_mode > 12) {
-         if (!values.getSaveBlock().isEmpty()) {
-            for (Location loc : new HashSet<>(values.getSaveBlock().keySet())) {
-               if (values.getSaveBlock().get(loc) != null) {
-                  wg.setBlock(loc, loc.getBlock());
-               }
-            }
-         }
-      } else {
-         if (!values.getSaveBlock_12().isEmpty()) {
-            for (Location loc : new HashSet<>(values.getSaveBlock_12().keySet())) {
-               wg.setBlock(loc, loc.getBlock());
-            }
-         }
-      }
+      delHolograms();
+      delBlocks();
       if (values.getPlaceholderAPI() != null) {
          values.getPlaceholderAPI().unregister();
       }
-      try {
-         nicknames.save(new File(getDataFolder(), "storage/db.yml"));
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
+      saveNicknames();
       sends.send("stop", null, null);
    }
    public YamlConfiguration of(String fileName) {
@@ -152,7 +132,6 @@ public final class Christmas extends JavaPlugin {
          File cfg_lang = new File(getDataFolder(), path);
          try {
             Files.move(cfg_lang.toPath(), cfg.toPath());
-            cfg.deleteOnExit();
             Files.delete(lang.toPath());
             Bukkit.getLogger().info("The creation of config.yml was successful");
          } catch (IOException e) {
@@ -179,6 +158,35 @@ public final class Christmas extends JavaPlugin {
       String db = "storage/db.yml";
       if (!(new File(getDataFolder(), db)).exists()) {
          saveResource(db, true);
+      }
+   }
+   private void delHolograms() {
+      if (!values.getDecentHolograms().isEmpty()) {
+         for (Hologram hd : new HashSet<>(values.getDecentHolograms().values())) {
+            hd.delete();
+         }
+      }
+      if (!values.getHolographicDisplays().isEmpty()) {
+         for (me.filoghost.holographicdisplays.api.hologram.Hologram hd : new HashSet<>(values.getHolographicDisplays().values())) {
+            hd.delete();
+         }
+      }
+   }
+   private void delBlocks() {
+      if (version_mode > 12) {
+         if (!values.getSaveBlock().isEmpty()) {
+            for (Location loc : new HashSet<>(values.getSaveBlock().keySet())) {
+               if (values.getSaveBlock().get(loc) != null) {
+                  wg.setBlock(loc, loc.getBlock());
+               }
+            }
+         }
+      } else {
+         if (!values.getSaveBlock_12().isEmpty()) {
+            for (Location loc : new HashSet<>(values.getSaveBlock_12().keySet())) {
+               wg.setBlock(loc, loc.getBlock());
+            }
+         }
       }
    }
    private void createStart(File fl) {
@@ -230,18 +238,23 @@ public final class Christmas extends JavaPlugin {
    public void updateLoot() {
       this.loot = of("storage/loot.yml");
    }
-   public void removeGifts(Location b_loc) {
+   public void removeGifts(Location b_loc, String name) {
       if (values.isOnCrashes()) {
          if (nicknames.getStringList("gifts") != null) {
             List<String> gifts2 = new ArrayList<>(nicknames.getStringList("gifts"));
-            gifts2.remove(b_loc.getWorld().getName() + ":" + b_loc.getX() + ":" + b_loc.getY() + ":" + b_loc.getZ());
-            nicknames.set("gifts", gifts2);
-            try {
-               nicknames.save(new File(getDataFolder(), "storage/db.yml"));
-            } catch (IOException e) {
-               e.printStackTrace();
+            if (!gifts2.isEmpty()) {
+               gifts2.remove(b_loc.getWorld().getName() + ":" + b_loc.getX() + ":" + b_loc.getY() + ":" + b_loc.getZ() + ":" + name);
+               nicknames.set("gifts", gifts2);
+               saveNicknames();
             }
          }
+      }
+   }
+   private void saveNicknames() {
+      try {
+         nicknames.save(new File(getDataFolder(), "storage/db.yml"));
+      } catch (IOException e) {
+         e.printStackTrace();
       }
    }
 }

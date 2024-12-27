@@ -1,6 +1,8 @@
 package dev.jdevs.JGifts.loots;
 
 import dev.jdevs.JGifts.Christmas;
+import dev.jdevs.JGifts.made.MessageLanguage;
+import dev.jdevs.JGifts.utils.Values;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,11 +18,15 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class Load {
     private final List<Loot> items = new ArrayList<>();
     private final Christmas plugin;
+    private final Values values;
+    private final MessageLanguage sends;
     public Load(Christmas plugin) {
         this.plugin = plugin;
+        this.values = plugin.getValues();
+        this.sends = plugin.getSends();
     }
     public void loadLoots() {
-        if (!plugin.getValues().isLoots()) {
+        if (!values.isLoots()) {
             return;
         }
         plugin.updateLoot();
@@ -69,17 +75,17 @@ public final class Load {
     }
     public void dropLoot(Location loc) {
         String type;
-        if (!plugin.getValues().isGrinch()) {
+        if (!values.isGrinch()) {
             type = "santa";
         } else {
             int currentChance2 = ThreadLocalRandom.current().nextInt(101);
-            if (plugin.getValues().getChance() >= currentChance2) {
+            if (values.getChance() >= currentChance2) {
                 type = "grinch";
             } else {
                 type = "santa";
             }
         }
-        if (plugin.getValues().isLoots()) {
+        if (values.isLoots()) {
             for (Loot lt : items) {
                 if (lt.getGift().contains(type)) {
                     int currentChance = ThreadLocalRandom.current().nextInt(101);

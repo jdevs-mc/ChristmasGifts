@@ -70,12 +70,17 @@ public final class SpawnGifts implements Listener {
                     if (Bukkit.getOnlinePlayers().size() != 0) {
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (checkLimitGifts(p)) {
-                                Spawn(p);
+                                new BukkitRunnable() {
+                                    @Override
+                                    public void run() {
+                                        Spawn(p);
+                                    }
+                                }.runTask(plugin);
                             }
                         }
                     }
                 }
-            }.runTaskTimer(plugin, seconds * 20L, seconds * 20L);
+            }.runTaskTimerAsynchronously(plugin, seconds * 20L, seconds * 20L);
         } else {
             new BukkitRunnable() {
                 @Override
@@ -88,30 +93,42 @@ public final class SpawnGifts implements Listener {
         }
     }
     void task(int people) {
-        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
         new BukkitRunnable() {
+            private List<Player> players = new ArrayList<>();
             int ok = 0;
 
             @Override
             public void run() {
+                if (players.isEmpty()) {
+                    players = new ArrayList<>(Bukkit.getOnlinePlayers());
+                    if (players.isEmpty()) {
+                        cancel();
+                        return;
+                    }
+                }
                 ok++;
                 Player p = players.get(ThreadLocalRandom.current().nextInt(players.size()));
                 if (checkLimitGifts(p)) {
-                    Spawn(p);
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            Spawn(p);
+                        }
+                    }.runTask(plugin);
                 }
                 if (ok >= people) {
                     players.clear();
                     cancel();
                 }
             }
-        }.runTaskTimer(plugin, 1, 1);
+        }.runTaskTimerAsynchronously(plugin, 1, 1);
     }
 
     void Spawn(Player p) {
         Location loc = p.getLocation();
         // Checking the world and the biomes
         String world_name = loc.getWorld().getName().toLowerCase();
-        if (values.getType_world().contains("allowed")) {
+        if (values.getType_world().equalsIgnoreCase("allowed")) {
             if (!values.getWorlds().contains(world_name)) {
                 return;
             }
@@ -121,7 +138,7 @@ public final class SpawnGifts implements Listener {
             }
         }
         String biome_name = loc.getBlock().getBiome().name().toLowerCase();
-        if (values.getType_biome().contains("allowed")) {
+        if (values.getType_biome().equalsIgnoreCase("allowed")) {
             if (!values.getBiomes().contains(biome_name)) {
                 return;
             }

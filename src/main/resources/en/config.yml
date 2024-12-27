@@ -1,5 +1,5 @@
 ###################################################################
-# JDevs                     v1.2.0                      Christmas #
+# JDevs                     v1.2.1                      Christmas #
 # Christmas                                                 JDevs #
 ###################################################################
 
@@ -65,10 +65,6 @@ actions:
   # [sound] sound;volume;pitch - Perform a sound for the player
   # Search for sounds here: https://helpch.at/docs/$version$/org/bukkit/Sound.html
   # // Replace $version$ with the version of your server, for example: https://helpch.at/docs/1.8.8/org/bukkit/Sound.html
-  #
-  # Built-in functions:
-  # %player% - Get the player's name
-  # %rnd_player% - Get the name of a random player
   # [particle] type;amount;r.g.b;radius - Summon a particle near the gift
   # type:
   #   one - One particle will appear in place of the gift.
@@ -76,6 +72,10 @@ actions:
   # r.g.b (Substitute the RGB color without removing the dots)
   # amount - number
   # radius - You can set a decimal number (0.1...)
+  #
+  # Built-in functions:
+  # %player% - Get the player's name
+  # %rnd_player% - Get the name of a random player
   gift:
     # When a gift appears
     spawn:

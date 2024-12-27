@@ -27,7 +27,7 @@ public class Updater {
         update(plugin, resourceName, toUpdate, Arrays.asList(ignoredSections));
     }
     private void update(Plugin plugin, String resourceName, File toUpdate, List<String> ignoredSections) throws IOException {
-        Preconditions.checkArgument(toUpdate.exists(), "The toUpdate file doesn't exist!");
+        Preconditions.checkArgument(toUpdate.exists(), "Update file doesn't exist!");
         FileConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(plugin.getResource(resourceName), StandardCharsets.UTF_8));
         FileConfiguration currentConfig = YamlConfiguration.loadConfiguration(toUpdate);
         Map<String, String> comments = parseComments(plugin, resourceName, defaultConfig);

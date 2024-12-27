@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
 public final class AntiGrief implements Listener {
     private final int version_mode;
@@ -28,6 +29,7 @@ public final class AntiGrief implements Listener {
             }
         }
     }
+    @SuppressWarnings("deprecation")
     @EventHandler
     void PistonRetract(BlockPistonRetractEvent event) {
         if (values.getGifts().isEmpty()) {
@@ -67,17 +69,7 @@ public final class AntiGrief implements Listener {
     }
 
     @EventHandler
-    void Explode(BlockDamageEvent event) {
-        if (values.getGifts().isEmpty()) {
-            return;
-        }
-        Block b = event.getBlock();
-        if (values.getGifts().containsKey(b.getLocation())) {
-            event.setCancelled(true);
-        }
-    }
-    @EventHandler
-    void Explode(BlockBreakEvent event) {
+    void Damage(BlockDamageEvent event) {
         if (values.getGifts().isEmpty()) {
             return;
         }
@@ -92,6 +84,26 @@ public final class AntiGrief implements Listener {
             return;
         }
         Block b = event.getBlock();
+        if (values.getGifts().containsKey(b.getLocation())) {
+            event.setCancelled(true);
+        }
+    }
+    @EventHandler
+    void BlockPlace(BlockPlaceEvent event) {
+        if (values.getGifts().isEmpty()) {
+            return;
+        }
+        Block b = event.getBlock();
+        if (values.getGifts().containsKey(b.getLocation())) {
+            event.setCancelled(true);
+        }
+    }
+    @EventHandler
+    void WaterPlace(PlayerBucketEmptyEvent event) {
+        if (values.getGifts().isEmpty()) {
+            return;
+        }
+        Block b = event.getBlockClicked().getRelative(event.getBlockFace());
         if (values.getGifts().containsKey(b.getLocation())) {
             event.setCancelled(true);
         }

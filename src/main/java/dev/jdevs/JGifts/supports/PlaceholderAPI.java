@@ -22,7 +22,7 @@ public final class PlaceholderAPI extends PlaceholderExpansion {
         if (args.length >= 1) {
             String tru = PlaceholderAPIPlugin.booleanTrue();
             String fals = PlaceholderAPIPlugin.booleanFalse();
-            if (args[0].contains("active")) {
+            if (args[0].equalsIgnoreCase("active")) {
                 if (args.length != 2) {
                     if (values.getGifts().containsValue(p.getUniqueId())) {
                         return tru;
@@ -34,7 +34,10 @@ public final class PlaceholderAPI extends PlaceholderExpansion {
                     }
                 }
                 return fals;
-            } else if (args[0].contains("limit")) {
+            } else if (args[0].equalsIgnoreCase("limit")) {
+                if (plugin.getNicknames().getConfigurationSection("players") == null) {
+                    return fals;
+                }
                 ConfigurationSection players = plugin.getNicknames().getConfigurationSection("players");
                 if (args.length != 2) {
                     if (values.getMax() > players.getInt(p.getName(), 0)) {
@@ -64,5 +67,4 @@ public final class PlaceholderAPI extends PlaceholderExpansion {
     public @NotNull String getVersion() {
         return "1.0.1";
     }
-    // During compilation, an unexpected guest appears here.
 }
