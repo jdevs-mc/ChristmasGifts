@@ -35,6 +35,7 @@ public final class Christmas extends JavaPlugin {
    private final String version_launch = "1.1.1";
    private final String version_config = "1.1.0";
    private Gift cmd;
+
    @Override
    public void onEnable() {
       cmd = new Gift(this);
@@ -106,6 +107,7 @@ public final class Christmas extends JavaPlugin {
       saveNicknames();
       sends.send("stop", null, null);
    }
+
    public YamlConfiguration of(String fileName) {
       if (!getDataFolder().exists()) {
          if (getDataFolder().mkdirs()) {
@@ -120,9 +122,11 @@ public final class Christmas extends JavaPlugin {
 
       return YamlConfiguration.loadConfiguration(file);
    }
+
    public void setDisabled(boolean bol) {
       disabled = bol;
    }
+
    public void createConfigurations() {
       File cfg = new File(this.getDataFolder(), "config.yml");
       if (!cfg.exists()) {
@@ -160,6 +164,7 @@ public final class Christmas extends JavaPlugin {
          saveResource(db, true);
       }
    }
+
    private void delHolograms() {
       if (!values.getDecentHolograms().isEmpty()) {
          for (Hologram hd : new HashSet<>(values.getDecentHolograms().values())) {
@@ -172,6 +177,7 @@ public final class Christmas extends JavaPlugin {
          }
       }
    }
+
    private void delBlocks() {
       if (version_mode > 12) {
          if (!values.getSaveBlock().isEmpty()) {
@@ -189,6 +195,7 @@ public final class Christmas extends JavaPlugin {
          }
       }
    }
+
    private void createStart(File fl) {
       launch = YamlConfiguration.loadConfiguration(fl);
       if (launch.getString("version") == null || !launch.getString("version").contains(version_launch)) {
@@ -204,6 +211,7 @@ public final class Christmas extends JavaPlugin {
          }
       }
    }
+
    private void checkVersion() {
       String[] ver = getServer().getBukkitVersion().split("\\.");
       if (!ver[0].endsWith("1")) {
@@ -214,8 +222,7 @@ public final class Christmas extends JavaPlugin {
       }
       if (ver[1].length() >= 2) {
          version_mode = Integer.parseInt(ver[1].substring(0, 2));
-      }
-      else {
+      } else {
          version_mode = Integer.parseInt(ver[1]);
       }
       if (version_mode <= 7) {
@@ -226,8 +233,7 @@ public final class Christmas extends JavaPlugin {
             Bukkit.getLogger().info("Version mode: <=?6?");
             Bukkit.getLogger().info("Why...");
          }
-      }
-      else if (version_mode <= 12) {
+      } else if (version_mode <= 12) {
          Bukkit.getLogger().info("Version mode: <=1.12.2");
          if (version_mode <= 9) {
             Bukkit.getLogger().info("Nostalgia...");
@@ -235,9 +241,11 @@ public final class Christmas extends JavaPlugin {
       }
       language = launch.getString("language").toLowerCase();
    }
+
    public void updateLoot() {
       this.loot = of("storage/loot.yml");
    }
+
    public void removeGifts(Location b_loc, String name) {
       if (values.isOnCrashes()) {
          if (nicknames.getStringList("gifts") != null) {
@@ -250,6 +258,7 @@ public final class Christmas extends JavaPlugin {
          }
       }
    }
+
    private void saveNicknames() {
       try {
          nicknames.save(new File(getDataFolder(), "storage/db.yml"));

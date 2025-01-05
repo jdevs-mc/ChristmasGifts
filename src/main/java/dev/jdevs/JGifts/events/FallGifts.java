@@ -58,7 +58,6 @@ public final class FallGifts implements Listener {
     private void sendMessage(Player sender, String text, Location loc) {
         messages.sendMessage(sender, text, loc);
     }
-    @SuppressWarnings("deprecation")
     @EventHandler
     void FallBlock(EntityChangeBlockEvent event) {
         Entity ent = event.getEntity();
@@ -83,7 +82,7 @@ public final class FallGifts implements Listener {
                     return;
                 }
             }
-            // We save the previous data of the block and replace it with our gift
+            // We save our gift and notify you about the spawn with the help of fireworks
             if (!values.getSpawnGifts().checkLimitGifts(p)) {
                 if (!ent.hasMetadata(key + "_force")) {
                     return;
@@ -101,44 +100,7 @@ public final class FallGifts implements Listener {
                 return;
             }
             // Spawn
-            Skull skin;
-            if (version > 12) {
-                values.getSaveBlock().put(b_loc, b.getBlockData());
-                b.setType(Material.PLAYER_HEAD);
-                skin = (Skull) b.getState();
-                PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
-                profile.setProperty(new ProfileProperty("textures", values.getTexture()));
-                skin.setPlayerProfile(profile);
-            } else {
-                try {
-                    Method method = ((Object) b).getClass().getMethod("getData");
-                    values.getSaveBlock_12().put(b_loc, new AbstractMap.SimpleEntry<>(b.getType(), (Byte) method.invoke(b)));
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
-                b.setType(Material.valueOf("SKULL"));
-                skin = (Skull) b.getState();
-                //noinspection deprecation
-                skin.setSkullType(SkullType.PLAYER);
-                //noinspection deprecation
-                skin.setRawData((byte) 1);
-                if (version >= 8) {
-                    try {
-                        GameProfile profile = new GameProfile(UUID.randomUUID(), "gift");
-                        profile.getProperties().put("textures", new Property("textures", values.getTexture()));
-                        Field profileField = skin.getClass().getDeclaredField("profile");
-                        profileField.setAccessible(true);
-                        profileField.set(skin, profile);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                else {
-                    skin.setOwner("defib");
-                }
-            }
-            skin.update();
-            // We save our gift and notify you about the spawn with the help of fireworks
+            setSkinGift(b, b_loc);
             ((FallingBlock) ent).setDropItem(false);
             String hologramType = values.getHologramType();
             // Creating a hologram
@@ -148,6 +110,46 @@ public final class FallGifts implements Listener {
             // We delete the gift in case of inactivity
             deleteTaskGift(b, b_loc, p);
         }
+    }
+    private void setSkinGift(Block b, Location b_loc) {
+        Skull skin;
+        if (version > 12) {
+            values.getSaveBlock().put(b_loc, b.getBlockData());
+            b.setType(Material.PLAYER_HEAD);
+            skin = (Skull) b.getState();
+            PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
+            profile.setProperty(new ProfileProperty("textures", values.getTexture()));
+            skin.setPlayerProfile(profile);
+        } else {
+            try {
+                Method method = ((Object) b).getClass().getMethod("getData");
+                values.getSaveBlock_12().put(b_loc, new AbstractMap.SimpleEntry<>(b.getType(), (Byte) method.invoke(b)));
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+            b.setType(Material.valueOf("SKULL"));
+            skin = (Skull) b.getState();
+            //noinspection deprecation
+            skin.setSkullType(SkullType.PLAYER);
+            //noinspection deprecation
+            skin.setRawData((byte) 1);
+            if (version >= 8) {
+                try {
+                    GameProfile profile = new GameProfile(UUID.randomUUID(), "gift");
+                    profile.getProperties().put("textures", new Property("textures", values.getTexture()));
+                    Field profileField = skin.getClass().getDeclaredField("profile");
+                    profileField.setAccessible(true);
+                    profileField.set(skin, profile);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                //noinspection deprecation
+                skin.setOwner("defib");
+            }
+        }
+        skin.update();
     }
     private void createHolograms(String hologramType, Location b_loc) {
         String gen_hol = values.generateText(8);
