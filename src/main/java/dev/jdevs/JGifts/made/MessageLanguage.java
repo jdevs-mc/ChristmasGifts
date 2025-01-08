@@ -44,7 +44,7 @@ public final class MessageLanguage {
                     "\n" +
                     "&f&l✽ &cHappy New Year &f&l✽\n" +
                     "\n" +
-                    "&7The plugin has been disabled (v1.2.1)";
+                    "&7The plugin has been disabled (v1.3.0)";
         } else if (message.equalsIgnoreCase("help")) {
             message = "&aHelp:\n" +
                     "\n" +
@@ -97,7 +97,7 @@ public final class MessageLanguage {
                     "\n" +
                     "&f&l✽ &cС новым годом &f&l✽\n" +
                     "\n" +
-                    "&7Плагин был выключен (v1.2.1)";
+                    "&7Плагин был выключен (v1.3.0)";
         } else if (message.equalsIgnoreCase("help")) {
             message = "&aПомощь:\n" +
                     "\n" +

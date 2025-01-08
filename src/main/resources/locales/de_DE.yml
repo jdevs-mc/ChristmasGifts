@@ -1,0 +1,53 @@
+# Spracheinstellungen
+settings:
+  # Hologramm-Einstellungen
+  holograms:
+    # // Aktivieren und Deaktivieren ist in launch.yml
+    # Höhe für ein Hologramm
+    height: 1.2
+    # Hologrammlinien
+    lines:
+      - "&cGeschenk"
+      - "&fDrücken Sie die RMB, um es zu öffnen!"
+actions:
+  # Aktionen:
+  # [message] achricht - Sende eine Nachricht an den Spieler.
+  # [broadcast] message - Sende eine Nachricht an alle Spieler
+  # [player] command - Führen Sie den Befehl im Namen des Players aus.
+  # [console] command - Führen Sie den Befehl im Namen der Konsole aus.
+  # [sound] sound;volume;pitch - Führen Sie einen Sound für den Player aus
+  # Hier nach Sounds suchen: https://helpch.at/docs/$version$/org/bukkit/Sound.html
+  # // Ersetzen $version$ zum Beispiel mit der Version Ihres Servers: https://helpch.at/docs/1.8.8/org/bukkit/Sound.html
+  # [particle] type;amount;r.g.b;radius - Beschwöre ein Teilchen in der Nähe des Geschenks
+  # type:
+  #   one - Ein Partikel erscheint anstelle des Geschenks.
+  #   circle - Partikel erscheinen um das Geschenk herum.
+  # r.g.b (Ersetzen Sie die RGB-Farbe, ohne die Punkte zu entfernen)
+  # amount - Zahl
+  # radius - Sie können eine Dezimalzahl (0.1...)
+  #
+  # Eingebaute Funktionen:
+  # %player% - Holen Sie sich den Namen des Spielers
+  # %rnd_player% - Erhalte den Namen eines zufälligen Spielers
+  gift:
+    # Wenn ein Geschenk erscheint
+    spawn:
+      - "[message] &f"
+      - "[message] &f&l✽ &aDer Weihnachtsmann &fhat dir &cein Geschenk geschickt &f- &cFrohes neues Jahr! &f&l✽"
+      - "[message] &f"
+    # Wenn Sie ein Geschenk verlieren
+    loss:
+      - "[message] &f"
+      - "[message] &f&l✽ &aDer Weihnachtsmann &fhat das &cGeschenk angenommen &f- &cSie haben vergessen, es abzuholen! &f&l✽"
+      - "[message] &f"
+    # Der Spieler hat das Geschenk erfolgreich abgeholt
+    success:
+      - "[message] &f&l✽ &r&fSie haben das Geschenk erfolgreich abgeholt"
+    # Der Spieler hat das Geschenklimit erreicht
+    limit:
+      - "[message] &f&l✽ &cSie haben bereits eine bestimmte Anzahl von Geschenken gesammelt! :("
+
+# Diese Übersetzung ist möglicherweise nicht 100% korrekt
+###############################################################
+# JDevs                                             Christmas #
+###############################################################

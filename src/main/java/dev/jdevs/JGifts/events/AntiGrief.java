@@ -29,7 +29,6 @@ public final class AntiGrief implements Listener {
             }
         }
     }
-    @SuppressWarnings("deprecation")
     @EventHandler
     void PistonRetract(BlockPistonRetractEvent event) {
         if (values.getGifts().isEmpty()) {
@@ -43,6 +42,7 @@ public final class AntiGrief implements Listener {
             }
         }
         else {
+            //noinspection deprecation
             if (values.getGifts().containsKey(event.getRetractLocation())) {
                 event.setCancelled(true);
             }

@@ -1,10 +1,10 @@
 ###################################################################
-# JDevs                     v1.2.1                      Christmas #
+# JDevs                     v1.3.0                      Christmas #
 # Christmas                                                 JDevs #
 ###################################################################
 
 # Do not delete
-version: 1.1.1
+version: 1.2.0
 
 # Language: RU/EN
 language: "null"
@@ -42,6 +42,12 @@ BaseSettings:
     # true - The player has reached the limit/The gift is active
     # false - The player has not reached the limit/The gift is not active
     PlaceholderAPI: false
+  messages:
+    # 1 mode uses your usual selected language from language
+    # Mode 2 uses the user's language, but if his language is not in the locales folder, then the usual language will be used for him.
+    # You can get the ID of your language to add using the command: /gifts locale
+    mode: 1
+    # By default, mode 1.
   spawn:
     # Mode
     mode:

@@ -1,0 +1,52 @@
+# Language settings
+settings:
+  # Hologram Settings
+  holograms:
+    # // Enabling and disabling is in launch.yml
+    # Height for a hologram
+    height: 1.2
+    # Hologram Lines
+    lines:
+      - "&cGift"
+      - "&fPress the RMB to open it!"
+actions:
+  # Actions:
+  # [message] message - Send a message to the player.
+  # [broadcast] message - Send a message to all players
+  # [player] command - Run the command on behalf of the player.
+  # [console] command - Run the command on behalf of the console.
+  # [sound] sound;volume;pitch - Perform a sound for the player
+  # Search for sounds here: https://helpch.at/docs/$version$/org/bukkit/Sound.html
+  # // Replace $version$ with the version of your server, for example: https://helpch.at/docs/1.8.8/org/bukkit/Sound.html
+  # [particle] type;amount;r.g.b;radius - Summon a particle near the gift
+  # type:
+  #   one - One particle will appear in place of the gift.
+  #   circle - Particles will appear around the gift.
+  # r.g.b (Substitute the RGB color without removing the dots)
+  # amount - number
+  # radius - You can set a decimal number (0.1...)
+  #
+  # Built-in functions:
+  # %player% - Get the player's name
+  # %rnd_player% - Get the name of a random player
+  gift:
+    # When a gift appears
+    spawn:
+      - "[message] &f"
+      - "[message] &f&l✽ &aSanta Claus&f has sent you &ca gift &f— &cHappy New year! &f&l✽"
+      - "[message] &f"
+    # If you lose a gift
+    loss:
+      - "[message] &f"
+      - "[message] &f&l✽ &aSanta Claus&f took &cthe gift &f— &cYou forgot to pick it up! &f&l✽"
+      - "[message] &f"
+    # The player has successfully collected the gift
+    success:
+      - "[message] &f&l✽ &r&fYou have successfully collected the gift"
+    # The player has reached the gift limit
+    limit:
+      - "[message] &f&l✽ &cYou have already collected a certain number of gifts! :("
+
+###############################################################
+# JDevs                                             Christmas #
+###############################################################

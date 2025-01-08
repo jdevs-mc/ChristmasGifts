@@ -74,6 +74,10 @@ public final class Gift implements CommandExecutor {
                 subLoot(args, sender, p);
                 return false;
             }
+            case "locale": {
+                locale(sender, p);
+                return false;
+            }
             case "add": {
                 add(args, sender, p);
                 return false;
@@ -136,6 +140,21 @@ public final class Gift implements CommandExecutor {
         }
     }
     // Default SubCommands
+    private void locale(CommandSender sender, Player p) {
+        if (p != null) {
+            String locale;
+            if (plugin.getVersion_mode() <= 12) {
+                //noinspection deprecation
+                locale = p.spigot().getLocale().toLowerCase();
+            }
+            else {
+                locale = p.getLocale().toLowerCase();
+            }
+            sendMessage(sender, "&a" + locale);
+        } else {
+            sendMessage(sender, "&cThis command cannot be written in the console!");
+        }
+    }
     private void add(String[] args, CommandSender sender, Player p) {
         if (args.length == 1 || args.length > 3) {
             sendMessage(sender, "&a/gifts add Player - &fPlace a gift near the player");
@@ -150,8 +169,25 @@ public final class Gift implements CommandExecutor {
             values.getSpawnGifts().fallBlockSpawn(p1, values.getSpawnGifts().searchLocation(p1, 3, p1.getLocation().getYaw()), force);
             send("successfully", p, null);
         } else {
-            for (String text : values.getLimit_message()) {
-                sendMessage(p1, text);
+            String locale = "";
+            if (values.getMessageMode() == 2) {
+                if (plugin.getVersion_mode() <= 12) {
+                    //noinspection deprecation
+                    locale = p.spigot().getLocale().toLowerCase();
+                }
+                else {
+                    locale = p.getLocale().toLowerCase();
+                }
+            }
+            if (values.getMessageMode() == 2 && values.getLimit_messages().containsKey(locale)) {
+                for (String text : values.getLimit_messages().get(locale)) {
+                    sendMessage(p1, text);
+                }
+            }
+            else {
+                for (String text : values.getLimit_messages().get("default")) {
+                    sendMessage(p1, text);
+                }
             }
             send("limit", p, null);
         }

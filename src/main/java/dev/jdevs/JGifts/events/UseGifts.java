@@ -17,7 +17,9 @@ public final class UseGifts implements Listener {
     private final Load load;
     private final Message messages;
     private final WG wg;
+    private final int version;
     public UseGifts(Christmas plugin) {
+        version = plugin.getVersion_mode();
         load = plugin.getLoad();
         messages = plugin.getMessages();
         wg = plugin.getWg();
@@ -39,8 +41,24 @@ public final class UseGifts implements Listener {
             // Drop loot
             load.dropLoot(loc);
             //
-            for (String msg : values.getSuccess()) {
-                messages.sendMessage(event.getPlayer(), msg, loc);
+            String locale = "";
+            if (values.getMessageMode() == 2) {
+                if (version <= 12) {
+                    //noinspection deprecation
+                    locale = p.spigot().getLocale().toLowerCase();
+                } else {
+                    locale = p.getLocale().toLowerCase();
+                }
+            }
+            if (values.getMessageMode() == 2 && values.getSuccessful().containsKey(locale)) {
+                for (String msg : values.getSuccessful().get(locale)) {
+                    messages.sendMessage(p, msg, loc);
+                }
+            }
+            else {
+                for (String msg : values.getSuccessful().get("default")) {
+                    messages.sendMessage(p, msg, loc);
+                }
             }
             values.getGifts().remove(loc);
             wg.setBlock(loc, b);

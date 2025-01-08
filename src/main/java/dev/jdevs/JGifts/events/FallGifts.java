@@ -76,13 +76,11 @@ public final class FallGifts implements Listener {
             }
             Block b = ent.getLocation().getBlock();
             Location b_loc = b.getLocation();
-            // Checking the WorldGuard
             if (values.isWorldGuard()) {
                 if (!checkWorldGuard(b_loc, p)) {
                     return;
                 }
             }
-            // We save our gift and notify you about the spawn with the help of fireworks
             if (!values.getSpawnGifts().checkLimitGifts(p)) {
                 if (!ent.hasMetadata(key + "_force")) {
                     return;
@@ -94,21 +92,27 @@ public final class FallGifts implements Listener {
             UUID uuid = p.getUniqueId();
             values.getTime().remove(uuid);
             values.getGifts().put(b_loc, p.getUniqueId());
-            // Start functions
-            startValues(b_loc, p);
+            String locale = "";
+            if (values.getMessageMode() == 2) {
+                if (version <= 12) {
+                    //noinspection deprecation
+                    locale = p.spigot().getLocale().toLowerCase();
+                } else {
+                    locale = p.getLocale().toLowerCase();
+                }
+            }
+            startValues(b_loc, p, locale);
             if (values.isAutoGive()) {
                 return;
             }
-            // Spawn
             setSkinGift(b, b_loc);
             ((FallingBlock) ent).setDropItem(false);
             String hologramType = values.getHologramType();
-            // Creating a hologram
             if (hologramType != null && !hologramType.contains("null")) {
-                createHolograms(hologramType, b_loc);
+                createHolograms(hologramType, b_loc, locale);
             }
             // We delete the gift in case of inactivity
-            deleteTaskGift(b, b_loc, p);
+            deleteTaskGift(b, b_loc, p, locale);
         }
     }
     private void setSkinGift(Block b, Location b_loc) {
@@ -151,7 +155,7 @@ public final class FallGifts implements Listener {
         }
         skin.update();
     }
-    private void createHolograms(String hologramType, Location b_loc) {
+    private void createHolograms(String hologramType, Location b_loc, String locale) {
         String gen_hol = values.generateText(8);
         double Y = b_loc.getY() + values.getHeight();
         Location hdloc = new Location(b_loc.getWorld(), b_loc.getX() + 0.5, Y, b_loc.getZ() + 0.5);
@@ -161,8 +165,15 @@ public final class FallGifts implements Listener {
             }
             Hologram hd = DHAPI.createHologram(gen_hol, hdloc);
             try {
-                for (String lore : values.getHdstring()) {
-                    DHAPI.addHologramLine(hd, lore);
+                if (values.getMessageMode() == 2 && values.getHdstrings().containsKey(locale)) {
+                    for (String lore : values.getHdstrings().get(locale)) {
+                        DHAPI.addHologramLine(hd, lore);
+                    }
+                }
+                else {
+                    for (String lore : values.getHdstrings().get("default")) {
+                        DHAPI.addHologramLine(hd, lore);
+                    }
                 }
             } catch (IllegalArgumentException e) {
                 sends.send("error", null, "settings.holograms.lines");
@@ -173,9 +184,17 @@ public final class FallGifts implements Listener {
             me.filoghost.holographicdisplays.api.hologram.Hologram hd = api.createHologram(hdloc);
             int line = 0;
             try {
-                for (String lore : values.getHdstring()) {
-                    hd.getLines().insertText(line, messages.hex(lore));
-                    line++;
+                if (values.getMessageMode() == 2 && values.getHdstrings().containsKey(locale)) {
+                    for (String lore : values.getHdstrings().get(locale)) {
+                        hd.getLines().insertText(line, messages.hex(lore));
+                        line++;
+                    }
+                }
+                else {
+                    for (String lore : values.getHdstrings().get("default")) {
+                        hd.getLines().insertText(line, messages.hex(lore));
+                        line++;
+                    }
                 }
             } catch (IllegalArgumentException e) {
                 sends.send("error", null, "settings.holograms.lines");
@@ -215,7 +234,7 @@ public final class FallGifts implements Listener {
         }
         return true;
     }
-    private void startValues(Location b_loc, Player p) {
+    private void startValues(Location b_loc, Player p, String locale) {
         // Add limit gift
         if (values.isLimit()) {
             YamlConfiguration nicknames = plugin.getNicknames();
@@ -229,8 +248,15 @@ public final class FallGifts implements Listener {
                 }
             }
         }
-        for (String lore : values.getStart_gift()) {
-            sendMessage(p, lore, b_loc);
+        if (values.getMessageMode() == 2 && values.getStart_gifts().containsKey(locale)) {
+            for (String lore : values.getStart_gifts().get(locale)) {
+                sendMessage(p, lore, b_loc);
+            }
+        }
+        else {
+            for (String lore : values.getStart_gifts().get("default")) {
+                sendMessage(p, lore, b_loc);
+            }
         }
         if (values.isAutoGive()) {
             load.dropLoot(b_loc);
@@ -252,7 +278,7 @@ public final class FallGifts implements Listener {
             }
         }
     }
-    private void deleteTaskGift(Block b, Location b_loc, Player p) {
+    private void deleteTaskGift(Block b, Location b_loc, Player p, String locale) {
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -277,8 +303,15 @@ public final class FallGifts implements Listener {
                         }
                     }
                     plugin.removeGifts(b_loc, p.getName());
-                    for (String lore : values.getStop_gift()) {
-                        sendMessage(p, lore, b_loc);
+                    if (values.getMessageMode() == 2 && values.getStop_gifts().containsKey(locale)) {
+                        for (String lore : values.getStop_gifts().get(locale)) {
+                            sendMessage(p, lore, b_loc);
+                        }
+                    }
+                    else {
+                        for (String lore : values.getStop_gifts().get("default")) {
+                            sendMessage(p, lore, b_loc);
+                        }
                     }
                     cancel();
                 } else {

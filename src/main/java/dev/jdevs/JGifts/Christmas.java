@@ -32,7 +32,7 @@ public final class Christmas extends JavaPlugin {
    private WG wg;
    private Load load;
    private MessageLanguage sends;
-   private final String version_launch = "1.1.1";
+   private final String version_launch = "1.2.0";
    private final String version_config = "1.1.0";
    private Gift cmd;
 

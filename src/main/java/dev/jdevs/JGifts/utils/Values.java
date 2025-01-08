@@ -23,12 +23,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Values {
     private final Christmas plugin;
     private String hologramType;
-    private List<String> hdstring;
-    private List<String> start_gift;
-    private List<String> stop_gift;
-    private List<String> success;
-    private List<String> limit_message;
-    private List<String> no_perm;
+    private int messageMode;
+    private final Map<String, List<String>> hdstrings = new HashMap<>();
+    private final Map<String, List<String>> start_gifts = new HashMap<>();
+    private final Map<String, List<String>> stop_gifts = new HashMap<>();
+    private final Map<String, List<String>> successful = new HashMap<>();
+    private final Map<String, List<String>> limit_messages = new HashMap<>();
     private final Map<Location, UUID> gifts = new HashMap<>();
     private final Map<Location, BlockData> saveBlock = new HashMap<>();
     private final Map<Location, Map.Entry<Material, Byte>> saveBlock_12 = new HashMap<>();
@@ -40,6 +40,7 @@ public class Values {
     private final List<UUID> time = new ArrayList<>();
     private int all_procent;
     private int procent;
+    private List<String> no_perm;
     private List<String> biomes;
     private List<String> worlds;
     private String type_world;
@@ -79,7 +80,7 @@ public class Values {
         YamlConfiguration launch = plugin.of("launch.yml");
         YamlConfiguration config = plugin.of("config.yml");
         setupSettings(launch, config);
-        setupActions(config);
+        setupActions(config, launch.getInt("BaseSettings.messages.mode"));
         if (first) {
             setupFirst(launch);
         }
@@ -182,13 +183,34 @@ public class Values {
         id = settings.getInt("gift.spawn.id", 5);
         timeLived = settings.getInt("gift.spawn.timeLived");
     }
-    private void setupActions(YamlConfiguration config) {
-        hdstring = config.getStringList("settings.holograms.lines");
-        start_gift = config.getStringList("actions.gift.spawn");
-        stop_gift = config.getStringList("actions.gift.loss");
-        success = config.getStringList("actions.gift.success");
-        limit_message = config.getStringList("actions.gift.limit");
+    private void setupActions(YamlConfiguration config, int mode) {
+        messageMode = mode;
         no_perm = config.getStringList("actions.no_perm");
+        hdstrings.put("default", config.getStringList("settings.holograms.lines"));
+        start_gifts.put("default", config.getStringList("actions.gift.spawn"));
+        stop_gifts.put("default", config.getStringList("actions.gift.loss"));
+        successful.put("default", config.getStringList("actions.gift.success"));
+        limit_messages.put("default", config.getStringList("actions.gift.limit"));
+        if (mode == 2) {
+            File folder = new File(plugin.getDataFolder(), "locales");
+            plugin.of("locales/ru_RU.yml");
+            plugin.of("locales/en_US.yml");
+            plugin.of("locales/de_DE.yml");
+            File[] list = folder.listFiles();
+            if (list != null) {
+                for (File file : list) {
+                    if (file.isFile()) {
+                        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+                        String locale = file.getName().replace(".yml", "").toLowerCase();
+                        hdstrings.put(locale, yaml.getStringList("settings.holograms.lines"));
+                        start_gifts.put(locale, yaml.getStringList("actions.gift.spawn"));
+                        stop_gifts.put(locale, yaml.getStringList("actions.gift.loss"));
+                        successful.put(locale, yaml.getStringList("actions.gift.success"));
+                        limit_messages.put(locale, yaml.getStringList("actions.gift.limit"));
+                    }
+                }
+            }
+        }
     }
     PlaceholderAPI placeholderAPI = null;
     public void connectPlaceholderAPI() {
