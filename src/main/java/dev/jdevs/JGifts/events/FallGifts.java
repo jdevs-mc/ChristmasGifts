@@ -168,22 +168,12 @@ public final class FallGifts implements Listener {
             try {
                 if (values.getMessageMode() == 2 && values.getHdstrings().containsKey(locale)) {
                     for (String lore : values.getHdstrings().get(locale)) {
-                        lore = lore.
-                                replace("%player%", player.getName());
-                        if (values.isPlaceholderAPI()) {
-                            lore = PlaceholderAPI.setPlaceholders(player, lore);
-                        }
-                        DHAPI.addHologramLine(hd, lore);
+                        DHAPI.addHologramLine(hd, getLore(lore, player));
                     }
                 }
                 else {
                     for (String lore : values.getHdstrings().get("default")) {
-                        lore = lore.
-                                replace("%player%", player.getName());
-                        if (values.isPlaceholderAPI()) {
-                            lore = PlaceholderAPI.setPlaceholders(player, lore);
-                        }
-                        DHAPI.addHologramLine(hd, lore);
+                        DHAPI.addHologramLine(hd, getLore(lore, player));
                     }
                 }
             } catch (IllegalArgumentException e) {
@@ -197,8 +187,7 @@ public final class FallGifts implements Listener {
             try {
                 if (values.getMessageMode() == 2 && values.getHdstrings().containsKey(locale)) {
                     for (String lore : values.getHdstrings().get(locale)) {
-                        lore = lore.
-                                replace("%player%", player.getName());
+                        lore = getLore(lore, player);
                         if (values.isPlaceholderAPI()) {
                             lore = PlaceholderAPI.setPlaceholders(player, lore);
                         }
@@ -208,8 +197,7 @@ public final class FallGifts implements Listener {
                 }
                 else {
                     for (String lore : values.getHdstrings().get("default")) {
-                        lore = lore.
-                                replace("%player%", player.getName());
+                        lore = getLore(lore, player);
                         if (values.isPlaceholderAPI()) {
                             lore = PlaceholderAPI.setPlaceholders(player, lore);
                         }
@@ -222,6 +210,11 @@ public final class FallGifts implements Listener {
             }
             values.getHolographicDisplays().put(b_loc, hd);
         }
+    }
+    private String getLore(String lore, Player player) {
+        lore = lore.
+                replace("%player%", player.getName());
+        return lore;
     }
     private boolean checkWorldGuard(Location b_loc, Player p) {
         RegionManager regionManager = wg.getRegionManager(b_loc);

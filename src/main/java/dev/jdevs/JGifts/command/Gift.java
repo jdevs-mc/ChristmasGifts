@@ -3,6 +3,7 @@ package dev.jdevs.JGifts.command;
 import dev.jdevs.JGifts.Christmas;
 import dev.jdevs.JGifts.loots.Load;
 import dev.jdevs.JGifts.made.MessageLanguage;
+import dev.jdevs.JGifts.supports.PlaceholderAPI;
 import dev.jdevs.JGifts.utils.Message;
 import dev.jdevs.JGifts.utils.Values;
 import org.bukkit.Bukkit;
@@ -198,8 +199,10 @@ public final class Gift implements CommandExecutor {
             return;
         }
         plugin.createConfigurations();
-        if (values.isPlaceholderAPI()) {
+        if (values.getPlaceholderAPI() != null) {
             values.getPlaceholderAPI().unregister();
+        }
+        if (values.isPlaceholderAPI()) {
             values.connectPlaceholderAPI();
         }
         values.setupValues(false);
