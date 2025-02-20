@@ -1,5 +1,5 @@
 ###################################################################
-# JDevs                     v1.3.0                      Christmas #
+# JDevs                     v1.3.1                      Christmas #
 # Christmas                                                 JDevs #
 ###################################################################
 
@@ -39,8 +39,8 @@ BaseSettings:
     # %ChristmasGifts_limit% - Check if the player has a limit on gifts
     # %ChristmasGifts_limit_Player% - Check if the player has a limit on gifts
     # Output:
-    # true - The player has reached the limit/The gift is active
-    # false - The player has not reached the limit/The gift is not active
+    # true/yes - The player has reached the limit/The gift is active
+    # false/no - The player has not reached the limit/The gift is not active
     PlaceholderAPI: false
   messages:
     # 1 mode uses your usual selected language from language

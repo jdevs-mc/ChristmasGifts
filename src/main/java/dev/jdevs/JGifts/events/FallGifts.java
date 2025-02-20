@@ -17,6 +17,7 @@ import dev.jdevs.JGifts.utils.Message;
 import dev.jdevs.JGifts.utils.Values;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -109,7 +110,7 @@ public final class FallGifts implements Listener {
             ((FallingBlock) ent).setDropItem(false);
             String hologramType = values.getHologramType();
             if (hologramType != null && !hologramType.contains("null")) {
-                createHolograms(hologramType, b_loc, locale);
+                createHolograms(hologramType, b_loc, p, locale);
             }
             // We delete the gift in case of inactivity
             deleteTaskGift(b, b_loc, p, locale);
@@ -155,7 +156,7 @@ public final class FallGifts implements Listener {
         }
         skin.update();
     }
-    private void createHolograms(String hologramType, Location b_loc, String locale) {
+    private void createHolograms(String hologramType, Location b_loc, Player player, String locale) {
         String gen_hol = values.generateText(8);
         double Y = b_loc.getY() + values.getHeight();
         Location hdloc = new Location(b_loc.getWorld(), b_loc.getX() + 0.5, Y, b_loc.getZ() + 0.5);
@@ -167,12 +168,12 @@ public final class FallGifts implements Listener {
             try {
                 if (values.getMessageMode() == 2 && values.getHdstrings().containsKey(locale)) {
                     for (String lore : values.getHdstrings().get(locale)) {
-                        DHAPI.addHologramLine(hd, lore);
+                        addLine(hd, player, lore);
                     }
                 }
                 else {
                     for (String lore : values.getHdstrings().get("default")) {
-                        DHAPI.addHologramLine(hd, lore);
+                        addLine(hd, player, lore);
                     }
                 }
             } catch (IllegalArgumentException e) {
@@ -186,13 +187,13 @@ public final class FallGifts implements Listener {
             try {
                 if (values.getMessageMode() == 2 && values.getHdstrings().containsKey(locale)) {
                     for (String lore : values.getHdstrings().get(locale)) {
-                        hd.getLines().insertText(line, messages.hex(lore));
+                        addLine(hd, line, player, lore);
                         line++;
                     }
                 }
                 else {
                     for (String lore : values.getHdstrings().get("default")) {
-                        hd.getLines().insertText(line, messages.hex(lore));
+                        addLine(hd, line, player, lore);
                         line++;
                     }
                 }
@@ -201,6 +202,22 @@ public final class FallGifts implements Listener {
             }
             values.getHolographicDisplays().put(b_loc, hd);
         }
+    }
+    private void addLine(Hologram hd, Player player, String lore) {
+        lore = lore.
+                replace("%player%", player.getName());
+        if (values.isPlaceholderAPI()) {
+            lore = PlaceholderAPI.setPlaceholders(player, lore);
+        }
+        DHAPI.addHologramLine(hd, lore);
+    }
+    private void addLine(me.filoghost.holographicdisplays.api.hologram.Hologram hd, int line, Player player, String lore) {
+        lore = lore.
+                replace("%player%", player.getName());
+        if (values.isPlaceholderAPI()) {
+            lore = PlaceholderAPI.setPlaceholders(player, lore);
+        }
+        hd.getLines().insertText(line, messages.hex(lore));
     }
     private boolean checkWorldGuard(Location b_loc, Player p) {
         RegionManager regionManager = wg.getRegionManager(b_loc);
