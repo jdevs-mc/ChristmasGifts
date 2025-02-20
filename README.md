@@ -14,6 +14,7 @@ Wandering around the world, the player can get a gift from Santa, but did the Gr
 ### 🌍 Languages:
 - EN (English)
 - RU (Russian)
+- Others (Message mode 2, manually)
 ### 🌐 Plugins:
 - **WorldGuard, WorldEdit** - Check where your gifts will spawn.
 - **PlaceholderAPI** - Add the ability to interact with the plugin via placeholders, and also add placeholders to messages from the configuration.
