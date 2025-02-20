@@ -17,8 +17,9 @@ import dev.jdevs.JGifts.utils.Message;
 import dev.jdevs.JGifts.utils.Values;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.PlaceholderSetting;
+import me.filoghost.holographicdisplays.api.hologram.line.HologramLine;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
@@ -158,7 +159,7 @@ public final class FallGifts implements Listener {
     }
     private void createHolograms(String hologramType, Location b_loc, Player player, String locale) {
         String gen_hol = values.generateText(8);
-        double Y = b_loc.getY() + values.getHeight();
+        double Y = b_loc.getY() + values.getHeight().getOrDefault(locale, values.getHeight().get("default"));
         Location hdloc = new Location(b_loc.getWorld(), b_loc.getX() + 0.5, Y, b_loc.getZ() + 0.5);
         if (hologramType.contains("decentholograms")) {
             if (DHAPI.getHologram(gen_hol) != null) {
@@ -166,50 +167,78 @@ public final class FallGifts implements Listener {
             }
             Hologram hd = DHAPI.createHologram(gen_hol, hdloc);
             try {
-                if (values.getMessageMode() == 2 && values.getHdstrings().containsKey(locale)) {
-                    for (String lore : values.getHdstrings().get(locale)) {
-                        DHAPI.addHologramLine(hd, getLore(lore, player));
-                    }
-                }
-                else {
-                    for (String lore : values.getHdstrings().get("default")) {
-                        DHAPI.addHologramLine(hd, getLore(lore, player));
-                    }
-                }
+                values.getDecentHolograms().put(b_loc, hd);
+                updateHD(b_loc, player, locale, true);
             } catch (IllegalArgumentException e) {
                 sends.send("error", null, "settings.holograms.lines");
             }
-            values.getDecentHolograms().put(b_loc, hd);
         } else {
             HolographicDisplaysAPI api = HolographicDisplaysAPI.get(plugin);
             me.filoghost.holographicdisplays.api.hologram.Hologram hd = api.createHologram(hdloc);
-            int line = 0;
+            hd.setPlaceholderSetting(PlaceholderSetting.ENABLE_ALL);
             try {
-                if (values.getMessageMode() == 2 && values.getHdstrings().containsKey(locale)) {
-                    for (String lore : values.getHdstrings().get(locale)) {
-                        lore = getLore(lore, player);
-                        if (values.isPlaceholderAPI()) {
-                            lore = PlaceholderAPI.setPlaceholders(player, lore);
-                        }
-                        hd.getLines().insertText(line, messages.hex(lore));
-                        line++;
-                    }
-                }
-                else {
-                    for (String lore : values.getHdstrings().get("default")) {
-                        lore = getLore(lore, player);
-                        if (values.isPlaceholderAPI()) {
-                            lore = PlaceholderAPI.setPlaceholders(player, lore);
-                        }
-                        hd.getLines().insertText(line, messages.hex(lore));
-                        line++;
-                    }
-                }
+                values.getHolographicDisplays().put(b_loc, hd);
+                updateHD(b_loc, player, locale, false);
             } catch (IllegalArgumentException e) {
                 sends.send("error", null, "settings.holograms.lines");
             }
-            values.getHolographicDisplays().put(b_loc, hd);
         }
+    }
+    private void updateHD(Location b_loc, Player player, String locale, boolean decentHolograms) {
+        Object hd;
+        if (decentHolograms) {
+            hd = values.getDecentHolograms().get(b_loc);
+        }
+        else {
+            hd = values.getHolographicDisplays().get(b_loc);
+        }
+        Map<Integer, String> time = new HashMap<>();
+        List<String> strings = values.getHdstrings().getOrDefault(locale, values.getHdstrings().get("default"));
+        int line = 0;
+        for (String lore : strings) {
+            lore = getLore(lore, player);
+            if (lore.contains("%time%")) {
+                time.put(line, lore);
+            }
+            String fin = messages.hex(lore.replace("%time%", String.valueOf(values.getRemove())));
+            if (decentHolograms) {
+                DHAPI.addHologramLine((Hologram) hd, fin);
+            }
+            else {
+                ((me.filoghost.holographicdisplays.api.hologram.Hologram) hd).getLines().insertText(line, fin);
+            }
+            line++;
+        }
+        if (!time.isEmpty()) {
+            startTimer(hd, time, decentHolograms);
+        }
+    }
+    private void startTimer(Object hd, Map<Integer, String> time, boolean decentHolograms) {
+        new BukkitRunnable() {
+            int timer = values.getRemove();
+
+            @Override
+            public void run() {
+                timer--;
+                if (timer <= 0 || (decentHolograms && ((Hologram) hd).isDisabled()) || (!decentHolograms && ((me.filoghost.holographicdisplays.api.hologram.Hologram) hd).isDeleted())) {
+                    cancel();
+                    return;
+                }
+                for (int l : time.keySet()) {
+                    String lore = messages.hex(time.get(l).replace("%time%", String.valueOf(timer)));
+                    if (decentHolograms) {
+                        DHAPI.setHologramLine((Hologram) hd, l, lore);
+                    } else {
+                        try {
+                            HologramLine line = ((me.filoghost.holographicdisplays.api.hologram.Hologram) hd).getLines().get(l);
+                            line.getClass().getMethod("setText", String.class).invoke(line, lore);
+                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        }.runTaskTimer(plugin, 20, 20);
     }
     private String getLore(String lore, Player player) {
         lore = lore.
@@ -263,12 +292,7 @@ public final class FallGifts implements Listener {
             }
         }
         if (values.getMessageMode() == 2 && values.getStart_gifts().containsKey(locale)) {
-            for (String lore : values.getStart_gifts().get(locale)) {
-                sendMessage(p, lore, b_loc);
-            }
-        }
-        else {
-            for (String lore : values.getStart_gifts().get("default")) {
+            for (String lore : values.getStart_gifts().getOrDefault(locale, values.getStart_gifts().get("default"))) {
                 sendMessage(p, lore, b_loc);
             }
         }
@@ -318,12 +342,7 @@ public final class FallGifts implements Listener {
                     }
                     plugin.removeGifts(b_loc, p.getName());
                     if (values.getMessageMode() == 2 && values.getStop_gifts().containsKey(locale)) {
-                        for (String lore : values.getStop_gifts().get(locale)) {
-                            sendMessage(p, lore, b_loc);
-                        }
-                    }
-                    else {
-                        for (String lore : values.getStop_gifts().get("default")) {
+                        for (String lore : values.getStop_gifts().getOrDefault(locale, values.getStop_gifts().get("default"))) {
                             sendMessage(p, lore, b_loc);
                         }
                     }

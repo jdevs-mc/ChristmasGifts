@@ -6,6 +6,11 @@ settings:
     # Height for a hologram
     height: 1.2
     # Hologram Lines
+    # Placeholder form in HolographicDisplays: {papi:%placeholder%}
+    # Placeholder form in DecentHolograms: %placeholder%
+    # Available placeholders:
+    # %player% - player's name.
+    # %time% - the time before which you can receive the gift.
     lines:
       - "&cGift"
       - "&fPress the RMB to open it!"

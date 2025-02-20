@@ -181,12 +181,7 @@ public final class Gift implements CommandExecutor {
                 }
             }
             if (values.getMessageMode() == 2 && values.getLimit_messages().containsKey(locale)) {
-                for (String text : values.getLimit_messages().get(locale)) {
-                    sendMessage(p1, text);
-                }
-            }
-            else {
-                for (String text : values.getLimit_messages().get("default")) {
+                for (String text : values.getLimit_messages().getOrDefault(locale, values.getLimit_messages().get("default"))) {
                     sendMessage(p1, text);
                 }
             }

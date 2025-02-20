@@ -51,12 +51,7 @@ public final class UseGifts implements Listener {
                 }
             }
             if (values.getMessageMode() == 2 && values.getSuccessful().containsKey(locale)) {
-                for (String msg : values.getSuccessful().get(locale)) {
-                    messages.sendMessage(p, msg, loc);
-                }
-            }
-            else {
-                for (String msg : values.getSuccessful().get("default")) {
+                for (String msg : values.getSuccessful().getOrDefault(locale, values.getSuccessful().get("default"))) {
                     messages.sendMessage(p, msg, loc);
                 }
             }

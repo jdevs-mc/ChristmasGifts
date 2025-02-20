@@ -6,6 +6,11 @@ settings:
     # Höhe für ein Hologramm
     height: 1.2
     # Hologrammlinien
+    # Platzhalterformular in holographischen Anzeigen: {papi:%Platzhalter%}
+    # Platzhalterformular in Dezent-Logrammen: %Platzhalter%
+    # Verfügbare Platzhalter:
+    # %player% - Name des Spielers
+    # %time% - die Zeit, vor der Sie das Geschenk erhalten können.
     lines:
       - "&cGeschenk"
       - "&fDrücken Sie die RMB, um es zu öffnen!"

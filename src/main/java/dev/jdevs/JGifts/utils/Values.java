@@ -33,6 +33,7 @@ public class Values {
     private final Map<Location, BlockData> saveBlock = new HashMap<>();
     private final Map<Location, Map.Entry<Material, Byte>> saveBlock_12 = new HashMap<>();
     private final Map<Location, Hologram> decentHolograms = new HashMap<>();
+    private final Map<String, Double> height = new HashMap<>();
     // Ignore warnings
     @SuppressWarnings("all")
     private final Map<Location, me.filoghost.holographicdisplays.api.hologram.Hologram> holographicDisplays = new HashMap<>();
@@ -71,7 +72,6 @@ public class Values {
     private boolean shift;
     private boolean firework;
     private boolean Loots;
-    private double height;
     private int remove;
     public Values(Christmas plugin) {
         this.plugin = plugin;
@@ -177,7 +177,6 @@ public class Values {
         chance = settings.getInt("grinch.chance");
         firework = settings.getBoolean("gift.spawn.firework");
         texture = settings.getString("gift.texture");
-        height = settings.getDouble("holograms.height");
         remove = settings.getInt("gift.remove");
         type = settings.getString("gift.spawn.type");
         id = settings.getInt("gift.spawn.id", 5);
@@ -187,6 +186,7 @@ public class Values {
         messageMode = mode;
         no_perm = config.getStringList("actions.no_perm");
         hdstrings.put("default", config.getStringList("settings.holograms.lines"));
+        height.put("default", config.getDouble("settings.holograms.height"));
         start_gifts.put("default", config.getStringList("actions.gift.spawn"));
         stop_gifts.put("default", config.getStringList("actions.gift.loss"));
         successful.put("default", config.getStringList("actions.gift.success"));
@@ -203,6 +203,7 @@ public class Values {
                         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
                         String locale = file.getName().replace(".yml", "").toLowerCase();
                         hdstrings.put(locale, yaml.getStringList("settings.holograms.lines"));
+                        height.put(locale, yaml.getDouble("settings.holograms.height"));
                         start_gifts.put(locale, yaml.getStringList("actions.gift.spawn"));
                         stop_gifts.put(locale, yaml.getStringList("actions.gift.loss"));
                         successful.put(locale, yaml.getStringList("actions.gift.success"));
@@ -214,6 +215,9 @@ public class Values {
     }
     PlaceholderAPI placeholderAPI = null;
     public void connectPlaceholderAPI() {
+        if (placeholderAPI == null) {
+            placeholderAPI = new PlaceholderAPI(plugin);
+        }
         new BukkitRunnable() {
             @Override
             public void run() {
