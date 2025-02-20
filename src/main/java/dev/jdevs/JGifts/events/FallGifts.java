@@ -168,12 +168,22 @@ public final class FallGifts implements Listener {
             try {
                 if (values.getMessageMode() == 2 && values.getHdstrings().containsKey(locale)) {
                     for (String lore : values.getHdstrings().get(locale)) {
-                        addLine(hd, player, lore);
+                        lore = lore.
+                                replace("%player%", player.getName());
+                        if (values.isPlaceholderAPI()) {
+                            lore = PlaceholderAPI.setPlaceholders(player, lore);
+                        }
+                        DHAPI.addHologramLine(hd, lore);
                     }
                 }
                 else {
                     for (String lore : values.getHdstrings().get("default")) {
-                        addLine(hd, player, lore);
+                        lore = lore.
+                                replace("%player%", player.getName());
+                        if (values.isPlaceholderAPI()) {
+                            lore = PlaceholderAPI.setPlaceholders(player, lore);
+                        }
+                        DHAPI.addHologramLine(hd, lore);
                     }
                 }
             } catch (IllegalArgumentException e) {
@@ -187,13 +197,23 @@ public final class FallGifts implements Listener {
             try {
                 if (values.getMessageMode() == 2 && values.getHdstrings().containsKey(locale)) {
                     for (String lore : values.getHdstrings().get(locale)) {
-                        addLine(hd, line, player, lore);
+                        lore = lore.
+                                replace("%player%", player.getName());
+                        if (values.isPlaceholderAPI()) {
+                            lore = PlaceholderAPI.setPlaceholders(player, lore);
+                        }
+                        hd.getLines().insertText(line, messages.hex(lore));
                         line++;
                     }
                 }
                 else {
                     for (String lore : values.getHdstrings().get("default")) {
-                        addLine(hd, line, player, lore);
+                        lore = lore.
+                                replace("%player%", player.getName());
+                        if (values.isPlaceholderAPI()) {
+                            lore = PlaceholderAPI.setPlaceholders(player, lore);
+                        }
+                        hd.getLines().insertText(line, messages.hex(lore));
                         line++;
                     }
                 }
@@ -202,22 +222,6 @@ public final class FallGifts implements Listener {
             }
             values.getHolographicDisplays().put(b_loc, hd);
         }
-    }
-    private void addLine(Hologram hd, Player player, String lore) {
-        lore = lore.
-                replace("%player%", player.getName());
-        if (values.isPlaceholderAPI()) {
-            lore = PlaceholderAPI.setPlaceholders(player, lore);
-        }
-        DHAPI.addHologramLine(hd, lore);
-    }
-    private void addLine(me.filoghost.holographicdisplays.api.hologram.Hologram hd, int line, Player player, String lore) {
-        lore = lore.
-                replace("%player%", player.getName());
-        if (values.isPlaceholderAPI()) {
-            lore = PlaceholderAPI.setPlaceholders(player, lore);
-        }
-        hd.getLines().insertText(line, messages.hex(lore));
     }
     private boolean checkWorldGuard(Location b_loc, Player p) {
         RegionManager regionManager = wg.getRegionManager(b_loc);
