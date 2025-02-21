@@ -180,10 +180,8 @@ public final class Gift implements CommandExecutor {
                     locale = p.getLocale().toLowerCase();
                 }
             }
-            if (values.getMessageMode() == 2 && values.getLimit_messages().containsKey(locale)) {
-                for (String text : values.getLimit_messages().getOrDefault(locale, values.getLimit_messages().get("default"))) {
-                    sendMessage(p1, text);
-                }
+            for (String text : values.getLimit_messages().getOrDefault(locale, values.getLimit_messages().get("default"))) {
+                sendMessage(p1, text);
             }
             send("limit", p, null);
         }

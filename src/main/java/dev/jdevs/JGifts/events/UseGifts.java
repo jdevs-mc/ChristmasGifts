@@ -50,10 +50,8 @@ public final class UseGifts implements Listener {
                     locale = p.getLocale().toLowerCase();
                 }
             }
-            if (values.getMessageMode() == 2 && values.getSuccessful().containsKey(locale)) {
-                for (String msg : values.getSuccessful().getOrDefault(locale, values.getSuccessful().get("default"))) {
-                    messages.sendMessage(p, msg, loc);
-                }
+            for (String msg : values.getSuccessful().getOrDefault(locale, values.getSuccessful().get("default"))) {
+                messages.sendMessage(p, msg, loc);
             }
             values.getGifts().remove(loc);
             wg.setBlock(loc, b);

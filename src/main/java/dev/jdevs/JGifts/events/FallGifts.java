@@ -291,10 +291,8 @@ public final class FallGifts implements Listener {
                 }
             }
         }
-        if (values.getMessageMode() == 2 && values.getStart_gifts().containsKey(locale)) {
-            for (String lore : values.getStart_gifts().getOrDefault(locale, values.getStart_gifts().get("default"))) {
-                sendMessage(p, lore, b_loc);
-            }
+        for (String lore : values.getStart_gifts().getOrDefault(locale, values.getStart_gifts().get("default"))) {
+            sendMessage(p, lore, b_loc);
         }
         if (values.isAutoGive()) {
             load.dropLoot(b_loc);
@@ -323,8 +321,7 @@ public final class FallGifts implements Listener {
                 if (values.getGifts().containsKey(b_loc)) {
                     if (values.isTakedLoot()) {
                         load.dropLoot(b_loc);
-                    }
-                    else {
+                    } else {
                         YamlConfiguration nicknames = plugin.getNicknames();
                         nicknames.set("players." + p.getName(), nicknames.getInt("players." + p.getName()) - 1);
                     }
@@ -334,17 +331,14 @@ public final class FallGifts implements Listener {
                         if (values.getDecentHolograms().get(b_loc) != null) {
                             values.getDecentHolograms().get(b_loc).delete();
                             values.getDecentHolograms().remove(b_loc);
-                        }
-                        else if (values.getHolographicDisplays().get(b_loc) != null) {
+                        } else if (values.getHolographicDisplays().get(b_loc) != null) {
                             values.getHolographicDisplays().get(b_loc).delete();
                             values.getHolographicDisplays().remove(b_loc);
                         }
                     }
                     plugin.removeGifts(b_loc, p.getName());
-                    if (values.getMessageMode() == 2 && values.getStop_gifts().containsKey(locale)) {
-                        for (String lore : values.getStop_gifts().getOrDefault(locale, values.getStop_gifts().get("default"))) {
-                            sendMessage(p, lore, b_loc);
-                        }
+                    for (String lore : values.getStop_gifts().getOrDefault(locale, values.getStop_gifts().get("default"))) {
+                        sendMessage(p, lore, b_loc);
                     }
                     cancel();
                 } else {
